@@ -189,6 +189,8 @@ class AdsbElement(object):
         Assumes the X/Y projection has already been performed.
         """
 
+        updated_rects = []
+
         card_color = self.__get_card_color__(time_since_last_report)
 
         # Render all of the textures and then
@@ -230,11 +232,19 @@ class AdsbElement(object):
         pygame.draw.polygon(framebuffer, card_color,
                             [fill_top_left, fill_top_right, fill_bottom_right, fill_bottom_left])
 
-        pygame.draw.lines(framebuffer,
-                          BLACK, True, [fill_top_left, fill_top_right, fill_bottom_right, fill_bottom_left], 6)
+        updated_rects = pygame.draw.lines(framebuffer,
+                                          BLACK,
+                                          True,
+                                          [fill_top_left,
+                                           fill_top_right,
+                                           fill_bottom_right,
+                                           fill_bottom_left],
+                                          6)
 
         self.__render_info_text__(
             all_textures_and_sizes, center_x, framebuffer, info_position_y, info_spacing)
+
+        return updated_rects
 
     def __get_card_color__(self, time_since_last_report):
         """
@@ -264,6 +274,8 @@ class AdsbElement(object):
             return YELLOW
 
     def __render_info_text__(self, additional_info_textures, center_x, framebuffer, info_position_y, info_spacing):
+        updated_rects = []
+
         for info_texture, size in additional_info_textures:
             width_x, width_y = size
             half_width = width_x >> 1
@@ -276,19 +288,23 @@ class AdsbElement(object):
                 x_pos = self.__width__ - width_x
 
             try:
-                framebuffer.blit(info_texture, [x_pos, info_position_y])
+                updated_rects += [framebuffer.blit(info_texture,
+                                                   [x_pos, info_position_y])]
             except:
                 pass
 
             info_position_y += int(width_y * info_spacing)
 
-    def __render_target_reticle__(self, framebuffer, identifier, center_x, center_y, reticle_lines, roll):
+        return updated_rects
+
+    def __render_target_reticle__(self, framebuffer, identifier, reticle_center_pos, reticle_lines, roll):
         """
         Renders a targetting reticle on the screen.
         Assumes the X/Y projection has already been performed.
         """
 
         border_space = int(self.__font__.get_height() * 3.0)
+        center_x, center_y = reticle_center_pos
 
         if center_y < border_space:
             center_y = border_space
@@ -296,8 +312,11 @@ class AdsbElement(object):
         if center_y > (self.__height__ - border_space):
             center_y = int(self.__height__ - border_space)
 
-        pygame.draw.lines(framebuffer,
-                          RED, True, reticle_lines, 4)
+        updated_rects = pygame.draw.lines(framebuffer,
+                                          RED,
+                                          True,
+                                          reticle_lines,
+                                          4)
 
         # Move the identifer text away from the reticle
         if center_y < self.__center__[1]:
@@ -311,21 +330,6 @@ class AdsbElement(object):
 
         text = pygame.transform.rotate(rendered_text, roll)
 
-        framebuffer.blit(
-            text, (center_x - (text_width >> 1), text_y - (text_height >> 1)))
-
-    def __render_texture__(self, framebuffer, position, texture, texture_size, roll):
-        """
-        Renders the text with the results centered on the given
-        position.
-        """
-
-        position_x, position_y = position
-        text_width, text_height = texture_size
-
-        text = pygame.transform.rotate(texture, roll)
-
-        framebuffer.blit(
-            text, (position_x - (text_width >> 1), position_y - (text_height >> 1)))
-
-        return text_width, text_height
+        updated_rects += [framebuffer.blit(text,
+                                           (center_x - (text_width >> 1), text_y - (text_height >> 1)))]
+        return updated_rects

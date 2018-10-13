@@ -41,9 +41,11 @@ class RollIndicator(AhrsElement):
         texture_size = roll_texture.get_size()
         text_half_width, text_half_height = texture_size
         text_half_width = int(text_half_width / 2)
-        framebuffer.blit(
-            roll_texture, (self.__center__[0] - text_half_width, self.__text_y_pos__))
+        updated_rect = framebuffer.blit(roll_texture,
+                                        (self.__center__[0] - text_half_width, self.__text_y_pos__))
         self.task_timer.stop()
+
+        return [updated_rect]
 
 
 if __name__ == '__main__':

@@ -128,12 +128,15 @@ class CompassAndHeadingTopElement(AhrsElement):
             heading_text, True, display.GREEN, display.BLACK)
         text_width, text_height = rendered_text.get_size()
 
-        framebuffer.blit(
-            rendered_text, (self.__center_x__ - (text_width >> 1), text_height << 1))
-
-        pygame.draw.lines(framebuffer, display.GREEN, True,
-                          self.__heading_text_box_lines__, 2)
+        updated_rects = [framebuffer.blit(rendered_text,
+                                          (self.__center_x__ - (text_width >> 1), text_height << 1)),
+                         pygame.draw.lines(framebuffer,
+                                           display.GREEN,
+                                           True,
+                                           self.__heading_text_box_lines__, 2)]
         self.task_timer.stop()
+
+        return updated_rects
 
     def __render_heading_text__(self, framebuffer, heading, position_x, position_y):
         """
@@ -142,8 +145,8 @@ class CompassAndHeadingTopElement(AhrsElement):
         """
         rendered_text, half_size = self.__heading_text__[heading]
 
-        framebuffer.blit(
-            rendered_text, (position_x - half_size[0], position_y - half_size[1]))
+        return framebuffer.blit(rendered_text,
+                                (position_x - half_size[0], position_y - half_size[1]))
 
 
 if __name__ == '__main__':

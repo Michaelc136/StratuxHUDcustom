@@ -43,17 +43,20 @@ class AdsbTargetBugs(AdsbElement):
             traffic_report, orientation)
 
         try:
-            self.__render_info_card__(framebuffer,
-                                      str(traffic_report.get_identifer()),
-                                      additional_info_text,
-                                      heading_bug_x,
-                                      traffic_report.get_age())
+            return self.__render_info_card__(framebuffer,
+                                             str(traffic_report.get_identifer()),
+                                             additional_info_text,
+                                             heading_bug_x,
+                                             traffic_report.get_age())
         except Exception as ex:
             print("EX:{}".format(ex))
-            pass
+
+            return None
 
     def render(self, framebuffer, orientation):
         # Render a heading strip along the top
+
+        updated_rects = []
 
         self.task_timer.start()
         heading = orientation.get_onscreen_projection_heading()
@@ -63,7 +66,7 @@ class AdsbTargetBugs(AdsbElement):
 
         if traffic_reports is None:
             self.task_timer.stop()
-            return
+            return updated_rects
 
         # Draw the heading bugs in reverse order so the traffic closest to
         # us will be the most visible
@@ -73,10 +76,14 @@ class AdsbTargetBugs(AdsbElement):
         reports_to_show = filter(lambda x: x.distance < imperial_occlude and math.fabs(
             x.altitude - orientation.alt) < 5000.0, traffic_bug_reports)
 
-        [self.__render_traffic_heading_bug__(
-            traffic_report, heading, orientation, framebuffer) for traffic_report in reports_to_show]
+        updated_rects = [self.__render_traffic_heading_bug__(traffic_report,
+                                                             heading,
+                                                             orientation,
+                                                             framebuffer) for traffic_report in reports_to_show]
 
         self.task_timer.stop()
+
+        return updated_rects
 
 
 if __name__ == '__main__':

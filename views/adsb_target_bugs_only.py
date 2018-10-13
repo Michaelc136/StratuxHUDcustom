@@ -41,19 +41,20 @@ class AdsbTargetBugsOnly(AdsbElement):
         # target_bug_scale = 0.04
         target_bug_scale = get_reticle_size(traffic_report.distance)
 
-        heading_bug_x = get_heading_bug_x(
-            heading, traffic_report.bearing, self.__pixels_per_degree_x__)
+        heading_bug_x = get_heading_bug_x(heading,
+                                          traffic_report.bearing,
+                                          self.__pixels_per_degree_x__)
 
         try:
             is_below = (orientation.alt - 100) > traffic_report.altitude
-            reticle, reticle_edge_positon_y = self.get_below_reticle(
-                heading_bug_x, target_bug_scale) if is_below else self.get_above_reticle(heading_bug_x, target_bug_scale)
+            reticle, reticle_edge_positon_y = self.get_below_reticle(heading_bug_x, target_bug_scale) if \
+                is_below else self.get_above_reticle(heading_bug_x, target_bug_scale)
 
             bug_color = display.BLUE if traffic_report.is_on_ground() == True else display.RED
 
-            pygame.draw.polygon(framebuffer, bug_color, reticle)
+            return pygame.draw.polygon(framebuffer, bug_color, reticle)
         except:
-            pass
+            return None
 
     def render(self, framebuffer, orientation):
         # Render a heading strip along the top
@@ -71,12 +72,15 @@ class AdsbTargetBugsOnly(AdsbElement):
         reports_to_show = filter(lambda x: x.distance < imperial_occlude and math.fabs(
             x.altitude - orientation.alt) < 5000.0, traffic_reports)
 
-        [self.__render_traffic_heading_bug__(
-            traffic_report, heading, orientation, framebuffer) for traffic_report in reports_to_show]
+        updated_rects = [self.__render_traffic_heading_bug__(traffic_report,
+                                                             heading,
+                                                             orientation,
+                                                             framebuffer) for traffic_report in reports_to_show]
 
         self.task_timer.stop()
+        return updated_rects
 
 
 if __name__ == '__main__':
     import hud_elements
-    hud_elements.run_adsb_hud_element(AdsbTargetBugs)
+    hud_elements.run_adsb_hud_element(AdsbTargetBugsOnly)

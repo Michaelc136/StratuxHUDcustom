@@ -28,8 +28,10 @@ class Time(AhrsElement):
         texture = self.__font__.render(time_text, True, YELLOW, BLACK)
         width = texture.get_size()[0]
 
-        framebuffer.blit(texture, (self.__center_x__ - (width >> 1), self.__text_y_pos__))
+        updated_rect = framebuffer.blit(texture, (self.__center_x__ - (width >> 1), self.__text_y_pos__))
         self.task_timer.stop()
+
+        return updated_rect
 
 
 if __name__ == '__main__':

@@ -81,7 +81,7 @@ class ArtificialHorizon(AhrsElement):
         """
 
         line_coords, line_center, reference_angle = line_info
-        draw_line(framebuffer, GREEN, False, line_coords, 4)
+        line_rect = draw_line(framebuffer, GREEN, False, line_coords, 4)
 
         text, half_size = self.__pitch_elements__[reference_angle]
         roll = int(roll)
@@ -97,8 +97,9 @@ class ArtificialHorizon(AhrsElement):
         text = text[roll]
         half_x, half_y = half_size
         center_x, center_y = line_center
+        blit_rect = framebuffer.blit(text, (center_x - half_x, center_y - half_y))
 
-        framebuffer.blit(text, (center_x - half_x, center_y - half_y))
+        return [line_rect, blit_rect]
 
     def render(self, framebuffer, orientation):
         """
@@ -126,10 +127,14 @@ class ArtificialHorizon(AhrsElement):
             lambda center:
             center[1][1] >= 0 and center[1][1] <= self.__height__, lines_centers_and_angles)
 
-        [self.__render_reference_line__(framebuffer, line_info, draw_line, roll)
-            for line_info in lines_centers_and_angles]
+        updated_rects = []
+        
+        for line_info in lines_centers_and_angles:
+            updated_rects += self.__render_reference_line__(framebuffer, line_info, draw_line, roll)
 
         self.task_timer.stop()
+
+        return updated_rects
 
     def __get_line_coords__(self, pitch, roll, reference_angle):
         """

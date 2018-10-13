@@ -38,14 +38,13 @@ class CompassAndHeadingBottomElement(CompassAndHeadingTopElement):
             [self.__center_x__ - half_width, self.compass_text_y + border_vertical_size + vertical_alignment_offset]]
 
     def __render_heading_mark__(self, framebuffer, x_pos, heading):
-        pygame.draw.line(framebuffer, GREEN,
-                         [x_pos, self.__line_top__], [x_pos, self.__line_bottom__], self.__border_width__)
-
-        self.__render_heading_text__(
-            framebuffer,
-            utils.apply_declination(heading),
-            x_pos,
-            self.compass_text_y)
+        return [pygame.draw.line(framebuffer,
+                                 GREEN,
+                                 [x_pos, self.__line_top__], [x_pos, self.__line_bottom__], self.__border_width__),
+                self.__render_heading_text__(framebuffer,
+                                             utils.apply_declination(heading),
+                                             x_pos,
+                                             self.compass_text_y)]
 
     def render(self, framebuffer, orientation):
         """
@@ -65,8 +64,11 @@ class CompassAndHeadingBottomElement(CompassAndHeadingTopElement):
         if heading > 360:
             heading -= 360
 
-        [self.__render_heading_mark__(framebuffer, heading_mark_to_render[0], heading_mark_to_render[1])
-         for heading_mark_to_render in self.__heading_strip__[heading]]
+        updated_rects = []
+
+        for heading_mark_to_render in self.__heading_strip__[heading]:
+            more_rects = self.__render_heading_mark__(framebuffer, heading_mark_to_render[0], heading_mark_to_render[1])
+            updated_rects += more_rects
 
         # Render the text that is showing our AHRS and GPS headings
         heading_text = "{0} | {1}".format(
@@ -78,12 +80,13 @@ class CompassAndHeadingBottomElement(CompassAndHeadingTopElement):
             heading_text, True, BLACK, GREEN)
         text_width, text_height = rendered_text.get_size()
 
-        pygame.draw.polygon(framebuffer, GREEN,
-                            self.__heading_text_box_lines__)
+        updated_rects.append(pygame.draw.polygon(framebuffer, GREEN,self.__heading_text_box_lines__))
 
         framebuffer.blit(
             rendered_text, (self.__center_x__ - (text_width >> 1), self.compass_text_y))
         self.task_timer.stop()
+
+        return updated_rects
 
 
 if __name__ == '__main__':

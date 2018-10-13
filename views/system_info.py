@@ -146,6 +146,7 @@ class SystemInfo(AhrsElement):
         ]
 
         render_y = self.__text_y_pos__
+        updated_rects = []
 
         for line in info_lines:
             # Draw the label in a standard color.
@@ -156,11 +157,13 @@ class SystemInfo(AhrsElement):
             # Draw the value in the encoded colors.
             texture_rhs = self.__font__.render(
                 line[1][0], True, line[1][1], BLACK)
-            framebuffer.blit(texture_rhs, (size[0], render_y))
+            updated_rects += [framebuffer.blit(texture_rhs, (size[0], render_y))]
 
             render_y = render_y - (self.font_height * 1.2)
 
         self.task_timer.stop()
+
+        return updated_rects
 
 
 if __name__ == '__main__':

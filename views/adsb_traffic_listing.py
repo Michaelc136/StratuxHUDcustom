@@ -114,9 +114,11 @@ class AdsbTrafficListing(AdsbElement):
         # Get the traffic, and bail out of we have none
         traffic_reports = HudDataCache.get_reliable_traffic()
 
+        updated_rects = []
+
         if traffic_reports is None:
             self.task_timer.stop()
-            return
+            return updated_rects
 
         # Render a list of traffic that we have positions
         # for, along with the tail number
@@ -135,10 +137,12 @@ class AdsbTrafficListing(AdsbElement):
             traffic_text_texture = HudDataCache.get_cached_text_texture(traffic_report,
                                                                         self.__font__)[0]
 
-            framebuffer.blit(traffic_text_texture, (x_pos, y_pos))
+            updated_rects += framebuffer.blit(traffic_text_texture, (x_pos, y_pos))
 
             y_pos += self.__next_line_distance__
         self.task_timer.stop()
+    
+        return updated_rects
 
 
 if __name__ == '__main__':

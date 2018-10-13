@@ -24,9 +24,11 @@ class Altitude(AhrsElement):
             altitude_text, True, display.WHITE, display.BLACK)
         text_width, text_height = alt_texture.get_size()
 
-        framebuffer.blit(
-            alt_texture, (self.__rhs__ - text_width, self.__text_y_pos__))
+        updated_rect = framebuffer.blit(alt_texture,
+                                        (self.__rhs__ - text_width, self.__text_y_pos__))
         self.task_timer.stop()
+
+        return [updated_rect]
 
 
 if __name__ == '__main__':

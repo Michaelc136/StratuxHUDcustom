@@ -34,9 +34,11 @@ class LevelReference(AhrsElement):
         """
 
         self.task_timer.start()
-        [pygame.draw.lines(framebuffer, WHITE, False, line, 6)
-         for line in self.level_reference_lines]
+        updated_rects = [pygame.draw.lines(framebuffer, WHITE, False, line, 6)
+                         for line in self.level_reference_lines]
         self.task_timer.stop()
+
+        return updated_rects
 
 
 if __name__ == '__main__':

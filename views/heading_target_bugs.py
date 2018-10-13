@@ -36,12 +36,12 @@ class HeadingTargetBugs(AdsbElement):
     def __get_additional_target_text__(self, time_until_drop=0.0, altitude_delta=0.0, distance_meters=0.0):
         """
         Returns a tuple of text to be rendered with the target card.
-        
+
         Keyword Arguments:
             time_until_drop {float} -- The number of seconds until the flour bomb should be dropped. (default: {0.0})
             altitude_delta {float} -- The number of feet above the target. (default: {0.0})
             distance_meters {float} -- The distance (in meters) to the target. (default: {0.0})
-        
+
         Returns:
             string[] -- Tuple of strings.
         """
@@ -63,10 +63,11 @@ class HeadingTargetBugs(AdsbElement):
 
         self.task_timer.start()
         heading = orientation.get_onscreen_projection_heading()
+        updated_rects = []
 
         # Get the traffic, and bail out of we have none
         if targets.TARGET_MANAGER is None or targets.TARGET_MANAGER.targets is None:
-            return
+            return updated_rects
 
         for target_position in targets.TARGET_MANAGER.targets:
             ground_speed_ms = units.get_meters_per_second_from_mph(
@@ -103,12 +104,14 @@ class HeadingTargetBugs(AdsbElement):
             additional_info_text = self.__get_additional_target_text__(
                 time_until_drop, delta_altitude, units.get_feet_from_miles(distance_miles))
 
-            self.__render_info_card__(framebuffer,
-                                      "{0:.1f}".format(utils.apply_declination(bearing_to_target)),
-                                      additional_info_text,
-                                      heading_bug_x,
-                                      False)
+            updated_rects = self.__render_info_card__(framebuffer,
+                                                      "{0:.1f}".format(
+                                                          utils.apply_declination(bearing_to_target)),
+                                                      additional_info_text,
+                                                      heading_bug_x,
+                                                      False)
         self.task_timer.stop()
+        return updated_rects
 
 
 if __name__ == '__main__':

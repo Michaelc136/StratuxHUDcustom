@@ -26,11 +26,19 @@ class AhrsNotAvailable(object):
         """
 
         self.task_timer.start()
-        pygame.draw.line(framebuffer, self.__na_color__, self.__not_available_lines__[
-                         0][0], self.__not_available_lines__[0][1], self.__na_line_width__)
-        pygame.draw.line(framebuffer, self.__na_color__, self.__not_available_lines__[
-                         1][0], self.__not_available_lines__[1][1], self.__na_line_width__)
+        updated_rects = [pygame.draw.line(framebuffer,
+                                          self.__na_color__,
+                                          self.__not_available_lines__[0][0],
+                                          self.__not_available_lines__[0][1],
+                                          self.__na_line_width__)]
+        pygame.draw.line(framebuffer,
+                         self.__na_color__,
+                         self.__not_available_lines__[1][0],
+                         self.__not_available_lines__[1][1],
+                         self.__na_line_width__)
         self.task_timer.stop()
+
+        return updated_rects
 
 
 if __name__ == '__main__':

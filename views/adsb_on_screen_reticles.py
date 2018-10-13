@@ -32,9 +32,11 @@ class AdsbOnScreenReticles(AdsbElement):
         # Get the traffic, and bail out of we have none
         traffic_reports = HudDataCache.get_reliable_traffic()
 
+        updated_rects = []
+
         if traffic_reports is None:
             self.task_timer.stop()
-            return
+            return updated_rects
 
         for traffic in traffic_reports:
             # Do not render reticles for things to far away
@@ -62,26 +64,35 @@ class AdsbOnScreenReticles(AdsbElement):
                 reticle_x, reticle_y = self.__rotate_reticle__(
                     [[reticle_x, reticle_y]], orientation.roll)[0]
 
-                self.__render_target_reticle__(
-                    framebuffer, identifier, reticle_x, reticle_y, reticle, orientation.roll, reticle_size_px)
+                updated_rects.append(self.__render_target_reticle__(framebuffer,
+                                                                    identifier,
+                                                                    (reticle_x, reticle_y),
+                                                                    reticle,
+                                                                    orientation.roll,
+                                                                    reticle_size_px))
         self.task_timer.stop()
 
-    def __render_target_reticle__(self, framebuffer, identifier, center_x, center_y, reticle_lines, roll, reticle_size_px):
+        return updated_rects
+
+    def __render_target_reticle__(self, framebuffer, identifier, reticle_center_pos, reticle_lines, roll, reticle_size_px):
         """
         Renders a targetting reticle on the screen.
         Assumes the X/Y projection has already been performed.
         """
 
+        center_x, center_y = reticle_center_pos
         border_space = int(reticle_size_px * 1.2)
 
         center_y = border_space if center_y < border_space else center_y
         center_y = int(self.__height__ - border_space) \
             if center_y > (self.__height__ - border_space) else center_y
 
-        pygame.draw.lines(framebuffer,
+        largest_rect = pygame.draw.lines(framebuffer,
                           BLACK, True, reticle_lines, 20)
         pygame.draw.lines(framebuffer,
                           RED, True, reticle_lines, 10)
+
+        return largest_rect
 
     def __rotate_reticle__(self, reticle, roll):
         """

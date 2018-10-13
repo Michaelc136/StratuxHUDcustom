@@ -25,9 +25,11 @@ class SkidAndGs(AhrsElement):
             g_load_text, True, WHITE, BLACK)
         text_width, text_height = texture.get_size()
 
-        framebuffer.blit(
-            texture, (self.__rhs__ - text_width, self.__text_y_pos__))
+        updated_rect = framebuffer.blit(texture,
+                                        (self.__rhs__ - text_width, self.__text_y_pos__))
         self.task_timer.stop()
+
+        return [updated_rect]
 
 
 if __name__ == '__main__':

@@ -49,9 +49,11 @@ class TargetCount(AhrsElement):
 
         texture = self.__font__.render(text, True, WHITE, BLACK)
 
-        framebuffer.blit(
-            texture, (self.__left_x__, self.__text_y_pos__))
+        updated_rect = framebuffer.blit(texture,
+                                        (self.__left_x__, self.__text_y_pos__))
         self.task_timer.stop()
+
+        return updated_rect
 
 
 if __name__ == '__main__':

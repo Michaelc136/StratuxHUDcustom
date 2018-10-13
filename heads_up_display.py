@@ -151,8 +151,10 @@ class HeadsUpDisplay(object):
             show_unavailable = view_uses_ahrs and not self.__aircraft__.is_ahrs_available()
 
             current_fps = int(clock.get_fps())
-            surface = pygame.display.get_surface()
-            surface.fill(display.BLACK)
+            surface = self.__backpage_framebuffer__
+
+            for rect in self.__previous_rects__:
+                pygame.draw.rect(surface, display.BLACK, rect)
 
             self.frame_setup.stop()
             self.render_perf.start()
@@ -168,8 +170,8 @@ class HeadsUpDisplay(object):
             # to overdraw the pitch lines
             # and improve readability
             try:
-                render_times = [self.__ahrs_not_available_element__.render(surface, orientation)] if show_unavailable \
-                    else [self.__render_view_element__(hud_element, orientation) for hud_element in view]
+                render_times_and_rects = [self.__render_view_element__(surface, self.__ahrs_not_available_element__, orientation)] if show_unavailable \
+                    else [self.__render_view_element__(surface, hud_element, orientation) for hud_element in view]
             except Exception as e:
                 self.warn("LOOP:" + str(e))
             finally:
@@ -178,8 +180,14 @@ class HeadsUpDisplay(object):
             self.frame_cleanup.start()
             now = datetime.datetime.utcnow()
 
+            rects_list_of_lists = [e[1] for e in render_times_and_rects]
+            updated_rects = []
+            for vector in rects_list_of_lists:
+                updated_rects += vector
+
             if (self.__last_perf_render__ is None) or (now - self.__last_perf_render__).total_seconds() > 60:
                 self.__last_perf_render__ = now
+                render_times = [e[0] for e in render_times_and_rects]
 
                 [self.log('RENDER, {}, {}'.format(now, element_times))
                     for element_times in render_times]
@@ -198,26 +206,28 @@ class HeadsUpDisplay(object):
                 render_perf_text = '{} / {}fps'.format(
                     self.render_perf.to_string(), current_fps)
 
-                self.__render_text__(render_perf_text, display.BLACK,
-                                     debug_status_left, debug_status_top, display.YELLOW)
+                updated_rects.append(self.__render_text__(surface, render_perf_text, display.BLACK,
+                                                          debug_status_left, debug_status_top, display.YELLOW))
         finally:
             # Change the frame buffer
             if CONFIGURATION.flip_horizontal or CONFIGURATION.flip_vertical:
                 flipped = pygame.transform.flip(
                     surface, CONFIGURATION.flip_horizontal, CONFIGURATION.flip_vertical)
                 surface.blit(flipped, [0, 0])
-            pygame.display.flip()
+            # pygame.display.flip()
+            pygame.display.update(self.__previous_rects__ + updated_rects)
+            self.__previous_rects__ = updated_rects
             clock.tick()  # MAX_FRAMERATE)
             self.__fps__.push(current_fps)
             self.frame_cleanup.stop()
 
         return True
 
-    def __render_view_element__(self, hud_element, orientation):
+    def __render_view_element__(self, surface, hud_element, orientation):
         element_name = str(hud_element)
+        updated_rects = []
 
         try:
-            surface = pygame.display.get_surface()
             if element_name not in self.__view_element_timers:
                 self.__view_element_timers[element_name] = TaskTimer(
                     element_name)
@@ -225,19 +235,19 @@ class HeadsUpDisplay(object):
             timer = self.__view_element_timers[element_name]
             timer.start()
             try:
-                hud_element.render(surface, orientation)
+                updated_rects = hud_element.render(surface, orientation)
             except Exception as e:
                 self.warn('ELEMENT {} EX:{}'.format(element_name, e))
             timer.stop()
             timer_string = timer.to_string()
 
-            return timer_string
+            return timer_string, updated_rects
         except Exception as ex:
             self.warn('__render_view_element__ EX:{}'.format(ex))
 
-            return 'Element View Timer Error:{}'.format(ex)
+            return 'Element View Timer Error:{}'.format(ex), updated_rects
 
-    def __render_text__(self, text, color, position_x, position_y, background_color=None):
+    def __render_text__(self, surface, text, color, position_x, position_y, background_color=None):
         """
         Renders the text with the results centered on the given
         position.
@@ -246,13 +256,10 @@ class HeadsUpDisplay(object):
         rendered_text = self.__detail_font__.render(
             text, True, color, background_color)
         (text_width, text_height) = rendered_text.get_size()
-        surface = pygame.display.get_surface()
 
-        surface.blit(rendered_text,
-                     (position_x - (text_width >> 1),
-                         position_y - (text_height >> 1)))
-
-        return text_width, text_height
+        return surface.blit(rendered_text,
+                            (position_x - (text_width >> 1),
+                             position_y - (text_height >> 1)))
 
     def log(self, text):
         """
@@ -421,6 +428,7 @@ class HeadsUpDisplay(object):
             adsb_traffic_address)
 
         self.__backpage_framebuffer__, screen_size = display.display_init()  # args.debug)
+        self.__previous_rects__ = []
         self.__width__, self.__height__ = screen_size
         pygame.mouse.set_visible(False)
 
@@ -499,7 +507,7 @@ class HeadsUpDisplay(object):
 
         flipped = pygame.transform.flip(
             surface, CONFIGURATION.flip_horizontal, CONFIGURATION.flip_vertical)
-        surface.blit(flipped, [0, 0])
+        self.__previous_rects__ = [surface.blit(flipped, [0, 0])]
         pygame.display.flip()
 
     def __handle_input__(self):
