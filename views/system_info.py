@@ -151,7 +151,7 @@ class SystemInfo(AhrsElement):
         for line in info_lines:
             # Draw the label in a standard color.
             texture_lhs = self.__font__.render(line[0], True, BLUE, BLACK)
-            framebuffer.blit(texture_lhs, (0, render_y))
+            updated_rects += [framebuffer.blit(texture_lhs, (0, render_y))]
             size = texture_lhs.get_size()
 
             # Draw the value in the encoded colors.

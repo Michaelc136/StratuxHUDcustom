@@ -31,7 +31,7 @@ class Time(AhrsElement):
         updated_rect = framebuffer.blit(texture, (self.__center_x__ - (width >> 1), self.__text_y_pos__))
         self.task_timer.stop()
 
-        return updated_rect
+        return [updated_rect]
 
 
 if __name__ == '__main__':

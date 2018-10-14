@@ -130,14 +130,15 @@ class AdsbTrafficListing(AdsbElement):
             traffic_reports)
 
         if len(padded_traffic_reports) == 0:
-            framebuffer.blit(HudDataCache.get_cached_text_texture("NO TRAFFIC", self.__font__)[0],
-                             (x_pos, y_pos))
+            updated_rects += [framebuffer.blit(HudDataCache.get_cached_text_texture("NO TRAFFIC",
+                                                                                    self.__font__)[0],
+                                                                                    (x_pos, y_pos))]
 
         for identifier, traffic_report in padded_traffic_reports:
             traffic_text_texture = HudDataCache.get_cached_text_texture(traffic_report,
                                                                         self.__font__)[0]
 
-            updated_rects += framebuffer.blit(traffic_text_texture, (x_pos, y_pos))
+            updated_rects += [framebuffer.blit(traffic_text_texture, (x_pos, y_pos))]
 
             y_pos += self.__next_line_distance__
         self.task_timer.stop()

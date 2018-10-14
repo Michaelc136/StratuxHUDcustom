@@ -101,9 +101,9 @@ class HeadsUpDisplay(object):
             top_border = 0
             position = (left_border, top_border)
 
-            surface.blit(texture, position)
+            return surface.blit(texture, position)
         except:
-            pass
+            return None
 
     def __is_ahrs_view__(self, view):
         """
@@ -136,7 +136,8 @@ class HeadsUpDisplay(object):
         Returns:
             bool -- True if the code should run for another tick.
         """
-
+        
+        updated_rects = []
         try:
             self.frame_setup.start()
             if not self.__handle_input__():
@@ -159,7 +160,7 @@ class HeadsUpDisplay(object):
             self.frame_setup.stop()
             self.render_perf.start()
 
-            self.__render_view_title__(view_name, surface)
+            title_rect = self.__render_view_title__(view_name, surface)
 
             # Order of drawing is important
             # The pitch lines are drawn before the other
@@ -181,7 +182,7 @@ class HeadsUpDisplay(object):
             now = datetime.datetime.utcnow()
 
             rects_list_of_lists = [e[1] for e in render_times_and_rects]
-            updated_rects = []
+            updated_rects = [title_rect]
             for vector in rects_list_of_lists:
                 updated_rects += vector
 
@@ -214,8 +215,11 @@ class HeadsUpDisplay(object):
                 flipped = pygame.transform.flip(
                     surface, CONFIGURATION.flip_horizontal, CONFIGURATION.flip_vertical)
                 surface.blit(flipped, [0, 0])
-            # pygame.display.flip()
-            pygame.display.update(self.__previous_rects__ + updated_rects)
+
+            try:
+                pygame.display.update(self.__previous_rects__ + updated_rects)
+            except:
+                pygame.display.flip()
             self.__previous_rects__ = updated_rects
             clock.tick()  # MAX_FRAMERATE)
             self.__fps__.push(current_fps)
