@@ -81,7 +81,8 @@ class ArtificialHorizon(AhrsElement):
         """
 
         line_coords, line_center, reference_angle = line_info
-        line_rect = draw_line(framebuffer, GREEN, False, line_coords, 4)
+        line_rect = draw_line(framebuffer, BLACK, False, line_coords, 6)
+        draw_line(framebuffer, GREEN, False, line_coords, 4)
 
         text, half_size = self.__pitch_elements__[reference_angle]
         roll = int(roll)
