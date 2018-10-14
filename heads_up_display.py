@@ -154,8 +154,14 @@ class HeadsUpDisplay(object):
             current_fps = int(clock.get_fps())
             surface = self.__backpage_framebuffer__
 
-            for rect in self.__previous_rects__:
-                pygame.draw.rect(surface, display.BLACK, rect)
+            # Hacky - but we need to occasionally clear out
+            # the cruft that incremental updates leaves behind
+            self.__clear_count__ += 1
+            if self.__clear_count__ >= 10:
+                self.__clear_count__ = 0
+                self.__previous_rects__ += surface.fill(display.BLACK)
+            else:
+                [pygame.draw.rect(surface, display.BLACK, rect) for rect in self.__previous_rects__]
 
             self.frame_setup.stop()
             self.render_perf.start()
@@ -202,10 +208,9 @@ class HeadsUpDisplay(object):
                 self.log("-----------------------------------")
 
             if self.__should_render_perf__:
-                debug_status_left = int(self.__width__ >> 1)
+                debug_status_left = int(self.__width__ * 0.2)
                 debug_status_top = int(self.__height__ * 0.2)
-                render_perf_text = '{} / {}fps'.format(
-                    self.render_perf.to_string(), current_fps)
+                render_perf_text = '{}fps'.format(current_fps)
 
                 updated_rects.append(self.__render_text__(surface, render_perf_text, display.BLACK,
                                                           debug_status_left, debug_status_top, display.YELLOW))
@@ -464,6 +469,7 @@ class HeadsUpDisplay(object):
         self.__hud_views__ = self.__build_hud_views()
 
         self.__view_index__ = 0
+        self.__clear_count__ = 0
 
         logger = None
 
