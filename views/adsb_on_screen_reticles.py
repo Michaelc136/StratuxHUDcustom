@@ -27,49 +27,70 @@ class AdsbOnScreenReticles(AdsbElement):
         self.__top_border__ = int(self.__height__ * 0.1)
         self.__bottom_border__ = self.__height__ - self.__top_border__
 
+    def __render_on_screen_reticle__(self,  framebuffer, orientation, traffic):
+        """
+        Draws a single reticle on the screen.
+
+        Arguments:
+            framebuffer {Surface} -- Render target
+            orientation {Orientation} -- The orientation of the plane.
+            traffic {Traffic} -- The traffic to draw the reticle for.
+
+        Returns:
+            Rect -- The updated render spot.
+        """
+
+        identifier = traffic.get_identifer()
+
+        # Find where to draw the reticle....
+        reticle_x, reticle_y = self.__get_traffic_projection__(
+            orientation, traffic)
+
+        # Render using the Above us bug
+        on_screen_reticle_scale = get_reticle_size(traffic.distance)
+        reticle, reticle_size_px = self.get_onscreen_reticle(
+            reticle_x, reticle_y, on_screen_reticle_scale)
+
+        if reticle_y < self.__top_border__ or reticle_y > self.__bottom_border__ or \
+                reticle_x < 0 or reticle_x > self.__width__:
+            return None
+
+        reticle_x, reticle_y = self.__rotate_reticle__([[reticle_x, reticle_y]],
+                                                       orientation.roll)[0]
+
+        return self.__render_target_reticle__(framebuffer,
+                                              identifier,
+                                              (reticle_x, reticle_y),
+                                              reticle,
+                                              orientation.roll,
+                                              reticle_size_px)
+
     def render(self, framebuffer, orientation):
+        """[summary]
+
+        Arguments:
+            framebuffer {[type]} -- [description]
+            orientation {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
+
         self.task_timer.start()
         # Get the traffic, and bail out of we have none
         traffic_reports = HudDataCache.get_reliable_traffic()
 
-        updated_rects = []
+        # Do not render reticles for things to far away
+        traffic_reports = filter(lambda x: x.distance < imperial_occlude and not x.is_on_ground(),
+                                 traffic_reports)
 
         if traffic_reports is None:
             self.task_timer.stop()
-            return updated_rects
+            return []
 
-        for traffic in traffic_reports:
-            # Do not render reticles for things to far away
-            if traffic.distance > imperial_occlude:
-                continue
+        updated_rects = [self.__render_on_screen_reticle__(framebuffer, orientation, traffic)
+                         for traffic in traffic_reports]
 
-            if traffic.is_on_ground():
-                continue
-
-            identifier = traffic.get_identifer()
-
-            # Find where to draw the reticle....
-            reticle_x, reticle_y = self.__get_traffic_projection__(
-                orientation, traffic)
-
-            # Render using the Above us bug
-            on_screen_reticle_scale = get_reticle_size(traffic.distance)
-            reticle, reticle_size_px = self.get_onscreen_reticle(
-                reticle_x, reticle_y, on_screen_reticle_scale)
-
-            if reticle_y < self.__top_border__ or reticle_y > self.__bottom_border__ or \
-                    reticle_x < 0 or reticle_x > self.__width__:
-                continue
-            else:
-                reticle_x, reticle_y = self.__rotate_reticle__(
-                    [[reticle_x, reticle_y]], orientation.roll)[0]
-
-                updated_rects.append(self.__render_target_reticle__(framebuffer,
-                                                                    identifier,
-                                                                    (reticle_x, reticle_y),
-                                                                    reticle,
-                                                                    orientation.roll,
-                                                                    reticle_size_px))
         self.task_timer.stop()
 
         return updated_rects
@@ -88,7 +109,7 @@ class AdsbOnScreenReticles(AdsbElement):
             if center_y > (self.__height__ - border_space) else center_y
 
         largest_rect = pygame.draw.lines(framebuffer,
-                          BLACK, True, reticle_lines, 20)
+                                         BLACK, True, reticle_lines, 20)
         pygame.draw.lines(framebuffer,
                           RED, True, reticle_lines, 10)
 
