@@ -135,7 +135,7 @@ This is a similar view to `AHRS + ADS-B`, but removes any AHRS information.
 
 _NOTE:_ This _does not_ include a power source. You will need to supply ship power from a 5V USB port or from a battery.
 
-- [Raspberry Pi 3](https://www.amazon.com/Raspberry-Pi-RASPBERRYPI3-MODB-1GB-Model-Motherboard/dp/B01CD5VC92/ref=sr_1_3?s=electronics&ie=UTF8&qid=1529215701&sr=1-3&keywords=raspberry+pi+3) (_NOTE:_ The Pi 3 is currently reccomended over the 3B+ due to the 3B consuming less power and being more tolerant to lower voltages.)
+- [Raspberry Pi 3](https://www.amazon.com/Raspberry-Pi-RASPBERRYPI3-MODB-1GB-Model-Motherboard/dp/B01CD5VC92/ref=sr_1_3?s=electronics&ie=UTF8&qid=1529215701&sr=1-3&keywords=raspberry+pi+3)
 - [Case For Raspberry Pi](https://www.amazon.com/iPhoenix-Raspberry-White-Compatible-Model/dp/B06XQSXZ97/ref=sr_1_3?s=electronics&dd=iYEspjjyeRXfqDW9BHwJFw%2C%2C&ddc_refnmnt=pfod&ie=UTF8&qid=1529215794&sr=1-3&keywords=white+raspberry+pi+3+case&refinements=p_97%3A11292772011)
 - [Cooling Fan for Raspberry Pi](https://www.amazon.com/gp/product/B075R4S9GH/ref=od_aui_detailpages00?ie=UTF8&psc=1)
 - [Micro USB Cable](https://www.amazon.com/AmazonBasics-Male-Micro-Cable-Black/dp/B0711PVX6Z/ref=sr_1_6?s=electronics&ie=UTF8&qid=1529215888&sr=1-6&keywords=micro+usb+cable)
@@ -157,13 +157,10 @@ _NOTE:_ This _does not_ include a power source. You will need to supply ship pow
 
 ### First Boot
 
-1. Flash the latest [Raspbian Lite](https://www.raspberrypi.org/downloads/raspbian/) to an SD card. Raspbian Lite is a smaller download and excludes software not used by this project.
+1. Flash the latest [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) to an SD card
 2. Plug in a keyboard and a monitor
-   1. _OPTIONAL:_ Directly plugging an ethernet cable to the Pi from a router (or other device with an internet connection) will make the setup faster. You may also skip adding your home network to the WiFi settings.
 3. Plug in the power to the Pi.
-4. Login to the command line:
-    1. If you are using a GUI version of Raspbian: Press ctrl+alt+f1 to quit from the GUI to the desktop
-    2. If you are using the "Lite" (command line only version), login with the username `pi` and password `raspberry`
+4. Press ctrl+alt+f1 to quit from the GUI to the desktop
 5. `sudo raspi-config`
 6. `Boot Options` -> `Desktop / CLI` -> `Console Autologin`
 7. `Advanced Options` -> `Expand Filesystem`
@@ -173,9 +170,9 @@ _NOTE:_ This _does not_ include a power source. You will need to supply ship pow
 11. "Yes"
 12. Wait for the reboot
 13. `sudo raspi-config`
-14. "Network options" -> "WiFi" _(Skip this if you are using an ethernet based connection.)_
-15. Choose your country. Pressing "u" will take you to USA. _(Skip this if you are using an ethernet based connection.)_
-16. Enter your network name and password. _(Skip this if you are using an ethernet based connection.)_
+14. "Network options" -> "WiFi"
+15. Choose your country. Pressing "u" will take you to USA.
+16. Enter your network name and password.
 17. "Interfacing Options" -> "Enable SSH"
 18. "Localization" -> "Change Keyboard Layout" -> "Generic 104"
 19. "Other" -> "English US" -> "Default" -> "No compose" -> "Yes"
@@ -183,33 +180,25 @@ _NOTE:_ This _does not_ include a power source. You will need to supply ship pow
 
 #### Raspberry Pi 3B+
 
-If you are using a 3B+ (We reccomend using a "standard" Raspberry Pi 3 due to its tolerance of lower voltages.), it may suffer from undervoltage alerts.
-
-These _may_ be relieved by the following command to update your Linux install to the latest version of Raspbian:
+If you are using a 3B+, it may suffer from undervoltage alerts.
+These may be relieved by the following command to update your Linux install to the latest:
 
 ```bash
 sudo apt-get update && sudo apt-get dist-upgrade -y
 ```
 
-_Make sure you are using a high quality, low resistance, micro USB cable to supply power to your Pi 3B+._
+Make sure you are using a high quality power cable if you are using a Pi 3B+
 
 ### Install Software
 
-_NOTE:_ Using an ethernet cable for the internet connect will greatly simplify this process.
-
 1. Enter `ping google.com`. Press ctrl+c after a while. This will confirm that you have internet access. If you do not, then use rasp-config to re-enter your wi-fi
 2. `cd ~`
-3. Next we will make sure you have the latest version of the operating system, and the correct prerequisites.
-   1. `sudo apt-get update`
-   2. `sudo apt-get dist-upgrade`
-4. Now we will copy the HUD software onto the rendering unit.
-   1. `git clone https://github.com/JohnMarzulli/StratuxHud.git`
-   2. `cd StratuxHud`
-5. `python3 --version`. Verify that your version is 3.5.1 or newer
-6. `sudo python3 setup.py develop`
+3. `git clone https://github.com/JohnMarzulli/StratuxHud.git`
+4. `cd StratuxHud`
+5. `python --version`. Verify that your version is 2.7.14
+6. `sudo python setup.py develop`
 7. `sudo raspi-config`
 8. Choose "WiFi" again, and enter `stratux` as the SSID. No password.
-    1. _Note:_ If you have changed your password on your Stratux, then you will need to enter the password for the Stratux's network.
 9. `sudo vim /etc/wpa_supplicant/wpa_supplicant.conf`
 10. Delete the section that contains your WiFi network, leaving the section that contains the Stratux network.
 11. More info on configuring Linux WiFi: <https://www.raspberrypi.org/forums/viewtopic.php?t=160620>
@@ -219,7 +208,7 @@ _NOTE:_ Using an ethernet cable for the internet connect will greatly simplify t
 15. Enter the following text at the _bottom_ of the file:
 
 ```bash
-@reboot sudo python3 /home/pi/StratuxHud/stratux_hud.py &
+@reboot sudo python /home/pi/StratuxHud/stratux_hud.py &
 ```
 
 1. Save and quit.
@@ -258,9 +247,9 @@ _NOTE:_ Using an ethernet cable for the internet connect will greatly simplify t
 | Board                          | Screen         | Frames Per Second (AHRS View Only) |
 | ------------------------------ | -------------- | ---------------------------------- |
 | Rasp Pi 2                      | Sun Founder 5" | ~25FPS to ~30FPS                   |
-| Rasp Pi 3 (stand alone)        | Kivic          | ~30FPS to 50FPS                    |
+| Rasp Pi 3 (stand alone)        | Kivic          | Pending Retesting                  |
 | Rasp Pi 3 (Running on Stratux) | Kivic          | 30FPS                              |
-| Rasp Pi 3B+                    | Kivic          | ~40FPS to 55FPS                    |
+| Rasp Pi 3B+                    | Kivic          | 50FPS                              |
 
 Please note that the frame rate is capped at 60FPS. Drawing any faster will not be detectable using the reccomended output systems. Reducing the framerate will reduce the powerdraw.
 

@@ -4,7 +4,7 @@ Module to hold common utilities.
 
 import subprocess
 
-from . import local_debug
+import lib.local_debug as local_debug
 
 DEFAULT_POWER_CYCLE_DELAY = 2  # Time to allow for responses to be sent
 

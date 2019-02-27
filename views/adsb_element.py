@@ -1,10 +1,7 @@
 import math
 
 import pygame
-from . import utils
-from . import testing
-
-testing.load_imports()
+import views.utils as utils
 
 import units
 from configuration import Configuration

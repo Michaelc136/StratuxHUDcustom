@@ -1,12 +1,9 @@
 import pygame
 
-from . import testing
-testing.load_imports()
-
 from hud_elements import COS_RADIANS_BY_DEGREES, SIN_RADIANS_BY_DEGREES, run_ahrs_hud_element
 from lib.display import WHITE, BLACK, GREEN
 from lib.task_timer import TaskTimer
-from .ahrs_element import AhrsElement
+from views.ahrs_element import AhrsElement
 
 
 class ArtificialHorizon(AhrsElement):

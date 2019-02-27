@@ -1,12 +1,10 @@
 import pygame
-from . import utils
-from . import testing
-testing.load_imports()
+import views.utils as utils
 
 import lib.display as display
 import hud_elements
 from lib.task_timer import TaskTimer
-from .ahrs_element import AhrsElement
+from views.ahrs_element import AhrsElement
 
 
 class CompassAndHeadingTopElement(AhrsElement):

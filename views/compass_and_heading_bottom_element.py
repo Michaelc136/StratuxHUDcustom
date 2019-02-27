@@ -1,10 +1,8 @@
 import pygame
 
-from .compass_and_heading_top_element import CompassAndHeadingTopElement
+from views.compass_and_heading_top_element import CompassAndHeadingTopElement
 
-from . import testing
-from . import utils
-testing.load_imports()
+import views.utils as utils
 
 # pylint: disable=unused-wildcard-import
 from lib.display import *

@@ -1,11 +1,8 @@
 import math
 import pygame
 
-from .adsb_element import AdsbElement
+from views.adsb_element import AdsbElement
 from hud_elements import get_reticle_size, get_heading_bug_x, HudDataCache, imperial_occlude, max_altitude_delta, max_target_bugs
-
-from . import testing
-testing.load_imports()
 
 from lib.task_timer import TaskTimer
 
@@ -48,7 +45,6 @@ class AdsbTargetBugs(AdsbElement):
                                       traffic_report.get_age())
         except Exception as ex:
             print(f"EX:{ex}")
-            pass
 
     def render(self, framebuffer, orientation):
         # Render a heading strip along the top

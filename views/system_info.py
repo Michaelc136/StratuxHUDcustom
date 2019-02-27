@@ -1,33 +1,20 @@
-import commands
-from traffic import AdsbTrafficClient
-from ahrs_element import AhrsElement
-import configuration
-import units
-import lib.local_debug as local_debug
-import lib.colors as colors
-from lib.task_timer import TaskTimer
-from lib.display import *
-import pygame
-import socket
 import datetime
 import math
-
+import socket
 import struct
+import subprocess
 
-from . import testing
-testing.load_imports()
+import pygame
 
+import configuration
+import lib.colors as colors
+import lib.local_debug as local_debug
+import units
+from views.ahrs_element import AhrsElement
 # pylint: disable=unused-wildcard-import
 from lib.display import *
 from lib.task_timer import TaskTimer
-import lib.colors as colors
-import lib.local_debug as local_debug
-import units
-import configuration
-from .ahrs_element import AhrsElement
 from traffic import AdsbTrafficClient
-
-import subprocess
 
 NORMAL_TEMP = 50
 REDLINE_TEMP = 80

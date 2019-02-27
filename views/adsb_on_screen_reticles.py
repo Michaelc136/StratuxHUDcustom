@@ -1,10 +1,8 @@
 import pygame
 
 # pylint: disable=unused-wildcard-import
-from .adsb_element import *
+from views.adsb_element import AdsbElement
 from hud_elements import *
-
-testing.load_imports()
 
 import units
 

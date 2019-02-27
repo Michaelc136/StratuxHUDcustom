@@ -2,14 +2,11 @@ import math
 
 import pygame
 
-from . import testing
-testing.load_imports()
-
 # pylint: disable=unused-wildcard-import
 from lib.display import *
 
 from lib.task_timer import TaskTimer
-from .ahrs_element import AhrsElement
+from views.ahrs_element import AhrsElement
 
 
 class RollIndicator(AhrsElement):

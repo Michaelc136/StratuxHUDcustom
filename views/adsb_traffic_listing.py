@@ -1,12 +1,10 @@
 import pygame
 
 # pylint: disable=unused-wildcard-import
-from .adsb_element import *
+from views.adsb_element import *
 from hud_elements import *
 
-from . import utils
-from . import testing
-testing.load_imports()
+import views.utils as utils
 
 from lib.task_timer import TaskTimer
 

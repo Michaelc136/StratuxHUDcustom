@@ -1,12 +1,10 @@
 import math
 import pygame
 
-from .adsb_element import AdsbElement
+from views.adsb_element import AdsbElement
 from hud_elements import get_reticle_size, get_heading_bug_x, HudDataCache, max_altitude_delta, max_target_bugs
 
-from . import testing
 import lib.display as display
-testing.load_imports()
 
 from lib.task_timer import TaskTimer
 

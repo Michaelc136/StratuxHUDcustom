@@ -1,15 +1,12 @@
 import pygame
 
-from . import testing
-testing.load_imports()
-
 # pylint: disable=unused-wildcard-import
 from lib.display import *
 from hud_elements import *
 from lib.task_timer import TaskTimer
 import units
 import hud_elements
-from .ahrs_element import AhrsElement
+from views.ahrs_element import AhrsElement
 
 import targets
 
@@ -43,9 +40,14 @@ class TargetCount(AhrsElement):
 
         try:
             count = len(targets.TARGET_MANAGER.targets)
+            text = "TARGETS"
+
+            # Singular form
+            if count == 1:
+                text = text[:-1]
 
             if count > 0:
-                text = "{0} TARGETS".format(count)
+                text = "{0} {1}".format(count, text)
         except Exception as e:
             text = "ERROR" + str(e)
 
