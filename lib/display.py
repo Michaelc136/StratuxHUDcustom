@@ -9,7 +9,7 @@ import sys
 
 import pygame
 
-import local_debug
+import lib.local_debug as local_debug
 
 # The SunFounder 5" TFT
 DEFAULT_SCREEN_SIZE = 800, 480
@@ -27,9 +27,10 @@ def display_init():
     """
     Initializes PyGame to run on the current screen.
     """
+    # pylint: disable=no-member
 
     size = DEFAULT_SCREEN_SIZE
-    disp_no = os.getenv('DISPLAY')
+    disp_no = os.getenv("DISPLAY")
     if disp_no:
         # if False:
         # print "I'm running under X display = {0}".format(disp_no)
@@ -41,22 +42,22 @@ def display_init():
         drivers = ['fbcon', 'directfb', 'svgalib', 'directx', 'windib']
         found = False
         for driver in drivers:
-            if not os.getenv('SDL_VIDEODRIVER'):
-                os.putenv('SDL_VIDEODRIVER', driver)
+            if not os.getenv("SDL_VIDEODRIVER"):
+                os.putenv("SDL_VIDEODRIVER", driver)
 
             try:
                 pygame.display.init()
             except pygame.error:
-                print('Driver: {0} failed.'.format(driver))
+                print(f"Driver: {driver} failed.")
                 continue
 
             found = True
             break
 
         if not found:
-            raise Exception('No suitable video driver found!')
+            raise Exception("No suitable video driver found!")
 
-        size = DEFAULT_SCREEN_SIZE
+        size = DEFAULT_SCREEN_SIZE       
         screen_mode = pygame.HWACCEL
         # NOTE - HWSURFACE and DOUBLEBUF cause problems...
         # DOUBLEBUF

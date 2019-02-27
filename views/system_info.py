@@ -14,9 +14,20 @@ import math
 
 import struct
 
-import testing
+from . import testing
 testing.load_imports()
 
+# pylint: disable=unused-wildcard-import
+from lib.display import *
+from lib.task_timer import TaskTimer
+import lib.colors as colors
+import lib.local_debug as local_debug
+import units
+import configuration
+from .ahrs_element import AhrsElement
+from traffic import AdsbTrafficClient
+
+import subprocess
 
 NORMAL_TEMP = 50
 REDLINE_TEMP = 80
@@ -32,7 +43,7 @@ def get_ip_address():
 
     try:
         if not local_debug.is_debug():
-            ip_addr = commands.getoutput('hostname -I').strip()
+            ip_addr = subprocess.getoutput('hostname -I').strip()
             return (ip_addr, GREEN)
         else:
             host_name = socket.gethostname()
@@ -94,13 +105,13 @@ def get_websocket_uptime():
                              - AdsbTrafficClient.INSTANCE.create_time).total_seconds()
 
         if connection_uptime < 60:
-            return ("{} seconds".format(int(connection_uptime)), YELLOW)
+            return (f"{int(connection_uptime)} seconds", YELLOW)
         elif connection_uptime < 360:
-            return ("{0:.1f} minutes".format(connection_uptime / 60), GREEN)
+            return (f"{connection_uptime / 60:.1f} minutes", GREEN)
         elif connection_uptime < 216000:
-            return ("{0:.1f} hours".format(connection_uptime / 3600), GREEN)
+            return (f"{connection_uptime / 3600:.1f} hours", GREEN)
         else:
-            return ("{0:.1f} days".format(connection_uptime / 216000), GREEN)
+            return (f"{connection_uptime / 216000:.1f} days", GREEN)
     else:
         return ("DISCONNECTED", RED)
 

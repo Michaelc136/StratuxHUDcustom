@@ -1,6 +1,6 @@
 import datetime
 import time
-import Queue
+import queue
 
 class RollingStats(object):
     """
@@ -14,10 +14,11 @@ class RollingStats(object):
         Arguments:
             name {string} -- The name of the task being tracked.
         """
+		# note Queue.Queue is now queue.Queue in 3.7
 
         self.task_name = name
         self.__max_running_average__ = 120
-        self.__running_average__ = Queue.Queue(self.__max_running_average__)
+        self.__running_average__ = queue.Queue(self.__max_running_average__)
         self.__running_sum__ = 0.0
         self.__running_average_count__ = 0
         self.last = None
@@ -29,7 +30,7 @@ class RollingStats(object):
         """
 
         self.average = 0.0
-        self.__running_average__ = Queue.Queue(self.__max_running_average__)
+        self.__running_average__ = queue.Queue(self.__max_running_average__)
         self.__running_sum__ = 0.0
         self.__running_average_count__ = 0.0
     
@@ -68,23 +69,21 @@ class RollingStats(object):
             slowest = max(self.__running_average__.queue) if not self.__running_average__.empty() else None
 
             if slowest is not None:
-                slowest_text = "{0:.1f}".format(slowest)
+                slowest_text = f"{slowest:.1f}"
             else:
                 slowest_text = '---'
 
             slowest_length = len(slowest_text)
 
-            last_text = "{0:.1f}".format(self.last).rjust(slowest_length)
+            last_text = f"{self.last:.1f}".rjust(slowest_length)
 
             if self.average is not None:
-                average_text = "{0:.1f}".format(self.average).rjust(slowest_length)
+                average_text = f"{self.average:.1f}".rjust(slowest_length)
             else:
                 average_text = '---'
 
-            return "{0}, {1}, {2}, {3}".format(self.task_name,
-                                                last_text,
-                                                average_text,
-                                                slowest_text)
+            return f"{self.task_name}, {last_text}, {average_text}, {slowest_text}"
+
         except:
             return '---'
 

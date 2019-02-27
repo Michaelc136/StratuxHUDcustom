@@ -19,14 +19,14 @@ class RecurringTask(object):
 
     @staticmethod
     def kill_all():
-        timeout_sec = 5
+        _timeout_sec = 5
         for task in RecurringTask.__SPAWNED_TASKS__:  # list of your processes
-            print('Killing task {}'.format(task.__task_name__))
+            print(f"Killing task {task.__task_name__}")
 
             try:
                 task.stop()
             except Exception as ex:
-                print('While shutting down EX:{}'.format(ex))
+                print(f"While shutting down EX:{ex}")
 
     def stop(self):
         self.__is_alive__ = False
@@ -84,7 +84,7 @@ class RecurringTask(object):
                     self.__task_callback__()
                 except Exception as e:
                     # + sys.exc_info()[0]
-                    error_mesage = "EX({}):{}".format(self.__task_name__, e)
+                    error_mesage = f"EX({self.__task_name__}):{e}"
 
                     if self.__logger__ is not None:
                         self.__logger__.info(error_mesage)

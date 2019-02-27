@@ -4,7 +4,7 @@ Module to hold common utilities.
 
 import subprocess
 
-import local_debug
+from . import local_debug
 
 DEFAULT_POWER_CYCLE_DELAY = 2  # Time to allow for responses to be sent
 
@@ -162,7 +162,7 @@ def shutdown(seconds=30):
     """
 
     if not local_debug.is_debug():
-        subprocess.Popen(["sudo shutdown -h {0}".format(int(seconds))],
+        subprocess.Popen([f"sudo shutdown -h {int(seconds)}"],
                          shell=True, stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
 

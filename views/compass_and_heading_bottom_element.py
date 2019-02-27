@@ -1,12 +1,14 @@
 import pygame
 
-from compass_and_heading_top_element import CompassAndHeadingTopElement
+from .compass_and_heading_top_element import CompassAndHeadingTopElement
 
-import testing
-import utils
+from . import testing
+from . import utils
 testing.load_imports()
 
+# pylint: disable=unused-wildcard-import
 from lib.display import *
+
 from lib.task_timer import TaskTimer
 import hud_elements
 
@@ -69,14 +71,12 @@ class CompassAndHeadingBottomElement(CompassAndHeadingTopElement):
          for heading_mark_to_render in self.__heading_strip__[heading]]
 
         # Render the text that is showing our AHRS and GPS headings
-        heading_text = "{0} | {1}".format(
-            utils.apply_declination(
-                orientation.get_onscreen_projection_display_heading()),
-            utils.apply_declination(orientation.gps_heading))
+        heading_text = f"{utils.apply_declination(orientation.get_onscreen_projection_display_heading())} | " \
+                     + f"{utils.apply_declination(orientation.gps_heading)}"
 
         rendered_text = self.__font__.render(
             heading_text, True, BLACK, GREEN)
-        text_width, text_height = rendered_text.get_size()
+        text_width, _text_height = rendered_text.get_size()
 
         pygame.draw.polygon(framebuffer, GREEN,
                             self.__heading_text_box_lines__)

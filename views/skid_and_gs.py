@@ -1,11 +1,13 @@
 import pygame
 
-import testing
+from . import testing
 testing.load_imports()
 
+# pylint: disable=unused-wildcard-import
 from lib.display import *
+
 from lib.task_timer import TaskTimer
-from ahrs_element import AhrsElement
+from .ahrs_element import AhrsElement
 
 
 class SkidAndGs(AhrsElement):
@@ -20,10 +22,10 @@ class SkidAndGs(AhrsElement):
 
     def render(self, framebuffer, orientation):
         self.task_timer.start()
-        g_load_text = "{0:.1f}Gs".format(orientation.g_load)
+        g_load_text = f"{orientation.g_load:.1f}Gs"
         texture = self.__font__.render(
             g_load_text, True, WHITE, BLACK)
-        text_width, text_height = texture.get_size()
+        text_width, _text_height = texture.get_size()
 
         framebuffer.blit(
             texture, (self.__rhs__ - text_width, self.__text_y_pos__))

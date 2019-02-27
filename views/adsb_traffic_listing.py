@@ -1,9 +1,11 @@
 import pygame
 
-from adsb_element import *
+# pylint: disable=unused-wildcard-import
+from .adsb_element import *
 from hud_elements import *
-import utils
-import testing
+
+from . import utils
+from . import testing
 testing.load_imports()
 
 from lib.task_timer import TaskTimer
@@ -45,12 +47,11 @@ class AdsbTrafficListing(AdsbElement):
         icao = report[4]
 
         # if self.__show_list__:
-        traffic_report = "{0} {1} {2} {3}".format(
-            identifier.ljust(max_string_lengths[0]),
-            bearing.rjust(max_string_lengths[1]),
-            distance_text.rjust(max_string_lengths[2]),
-            altitude.rjust(max_string_lengths[3]))
-
+        traffic_report = f"{identifier.ljust(max_string_lengths[0])} " \
+                       + f"{bearing.rjust(max_string_lengths[1])} " \
+                       + f"{distance_text.rjust(max_string_lengths[2])} " \
+                       + f"{altitude.rjust(max_string_lengths[3])}"
+            
         return (icao, traffic_report)
 
     def __get_padded_traffic_reports__(self, traffic_reports):
@@ -65,18 +66,18 @@ class AdsbTrafficListing(AdsbElement):
         identifier = str(traffic.get_identifer())
         altitude_delta = int(traffic.altitude / 100.0)
         distance_text = self.__get_distance_string__(traffic.distance)
-        delta_sign = ''
+        delta_sign = ""
         if altitude_delta > 0:
-            delta_sign = '+'
-        altitude_text = "{0}{1}".format(delta_sign, altitude_delta)
-        bearing_text = "{0:.0f}".format(traffic.bearing)
+            delta_sign = "+"
+        altitude_text = f"{delta_sign}{altitude_delta}"
+        bearing_text = f"{traffic.bearing:.0f}"
 
         return [identifier, bearing_text, distance_text, altitude_text, traffic.icao_address]
 
 
     def __get_pre_padded_text_reports__(self, traffic_reports):
         # We do not want to show traffic on the ground.
-        reports_to_show = filter(lambda x: not x.is_on_ground(), traffic_reports)
+        reports_to_show = [x for x in traffic_reports if not x.is_on_ground()]
 
         # The __max_reports__ value is set based on the screen size
         # and how much can fit on the screen
@@ -120,7 +121,7 @@ class AdsbTrafficListing(AdsbElement):
             framebuffer.blit(HudDataCache.get_cached_text_texture("NO TRAFFIC", self.__font__)[0],
                              (x_pos, y_pos))
 
-        for identifier, traffic_report in padded_traffic_reports:
+        for _identifier, traffic_report in padded_traffic_reports:
             traffic_text_texture = HudDataCache.get_cached_text_texture(traffic_report,
                                                                         self.__font__)[0]
 
