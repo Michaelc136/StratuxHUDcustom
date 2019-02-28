@@ -8,7 +8,7 @@ from sys import platform
 
 from sys import platform, version_info
 
-REQUIRED_PYTHON_VERSION = 3.7
+REQUIRED_PYTHON_VERSION = 3.5
 MAXIMUM_PYTHON_VERSION = 3.7
 
 
@@ -20,8 +20,8 @@ def validate_python_version():
         Exception -- If the  version of Python is not new enough.
     """
 
-    python_version = float(f"{version_info.major}.{version_info.minor}")
-    error_text = f"Requires Python {REQUIRED_PYTHON_VERSION}"
+    python_version = float('{0}{1}'.format(version_info.major, version_info.minor))
+    error_text = 'Requires Python {}'.format(REQUIRED_PYTHON_VERSION)
 
     if python_version < REQUIRED_PYTHON_VERSION:
         print(error_text)
