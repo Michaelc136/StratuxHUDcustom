@@ -1,4 +1,3 @@
-sudo raspi-config nonint do_hostname StratuxHud
 # Sets to auto-login, commandline
 sudo raspi-config nonint do_boot_behaviour B2
 sudo raspi-config nonint do_ssh 1
@@ -8,5 +7,7 @@ sudo apt install vim -y
 sudo apt-get install python3-dev -y
 sudo apt-get install libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev -y
 
+# The host rename needs to be done last otherwise raspi-config gets confused.
+sudo raspi-config nonint do_hostname StratuxHud
 # Make sure that everything is rebooted after changing the HW and OS config
 sudo reboot now
