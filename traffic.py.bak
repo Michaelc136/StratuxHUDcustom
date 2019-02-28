@@ -430,7 +430,7 @@ class TrafficManager(object):
         self.__lock__.acquire()
         try:
             traffic_report = Traffic(json_report)
-            identifier = str(traffic_report.icao_address)
+            identifier = f"{traffic_report.icao_address}"
             if traffic_report.icao_address in self.traffic:
                 self.traffic[identifier].update(json_report)
             else:

@@ -44,7 +44,7 @@ class AdsbTargetBugs(AdsbElement):
                                       heading_bug_x,
                                       traffic_report.get_age())
         except Exception as ex:
-            print(f"EX:{ex}")
+            print("EX:{}".format(ex))
 
     def render(self, framebuffer, orientation):
         # Render a heading strip along the top

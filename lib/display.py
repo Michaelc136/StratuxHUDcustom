@@ -48,7 +48,7 @@ def display_init():
             try:
                 pygame.display.init()
             except pygame.error:
-                print(f"Driver: {driver} failed.")
+                print('Driver: {0} failed.'.format(driver))
                 continue
 
             found = True
@@ -57,7 +57,7 @@ def display_init():
         if not found:
             raise Exception("No suitable video driver found!")
 
-        size = DEFAULT_SCREEN_SIZE       
+        size = DEFAULT_SCREEN_SIZE
         screen_mode = pygame.HWACCEL
         # NOTE - HWSURFACE and DOUBLEBUF cause problems...
         # DOUBLEBUF

@@ -43,7 +43,7 @@ class StratuxStatus(object):
             self.satellites_locked = 0
 
         else:
-            url = f"http://{stratux_address}/getStatus"
+            url = "http://{0}/getStatus".format(stratux_address)
 
             try:
                 self.__status_json__ = stratux_session.get(
@@ -98,7 +98,7 @@ class StratuxCapabilities(object):
             self.barometric_enabled = True
             self.ahrs_enabled = True
         else:
-            url = f"http://{stratux_address}/getSettings"
+            url = "http://{0}/getSettings".format(stratux_address)
 
             try:
                 self.__capabilities_json__ = stratux_session.get(
@@ -302,7 +302,8 @@ class AhrsStratux(object):
 
         new_ahrs_data = AhrsData()
 
-        url = f"http://{configuration.CONFIGURATION.stratux_address()}/getSituation"
+        url = "http://{0}/getSituation".format(
+            configuration.CONFIGURATION.stratux_address())
 
         try:
             ahrs_json = self.__stratux_session__.get(

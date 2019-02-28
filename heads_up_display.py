@@ -203,7 +203,7 @@ class HeadsUpDisplay(object):
                 [self.log('FRAME, {}, {}'.format(now, self.__frame_timers__[aspect].to_string()))
                     for aspect in self.__frame_timers__.keys()]
 
-                self.log('OVERALL, {}, {}'.format(now, 
+                self.log('OVERALL, {}, {}'.format(now,
                                                   self.__fps__.to_string()))
 
                 self.log('TRAFFIC, {0}, MessagesReceived, {1}, {1}, {1}'.format(now,
@@ -247,13 +247,13 @@ class HeadsUpDisplay(object):
             try:
                 hud_element.render(surface, orientation)
             except Exception as e:
-                self.warn(f"ELEMENT {element_name} EX:{e}")
+                self.warn('ELEMENT {} EX:{}'.format(element_name, e))
             timer.stop()
             timer_string = timer.to_string()
 
             return timer_string
         except Exception as ex:
-            self.warn(f"__render_view_element__ EX:{ex}")
+            self.warn('__render_view_element__ EX:{}'.format(ex))
 
             return 'Element View Timer Error:{}'.format(ex)
 
@@ -387,7 +387,8 @@ class HeadsUpDisplay(object):
                     hud_views.append(
                         (view_name, new_view_elements, is_ahrs_view))
                 except Exception as ex:
-                    self.log(f"While attempting to load view={view}, EX:{ex}")
+                    self.log(
+                        "While attempting to load view={}, EX:{}".format(view, ex))
 
         return hud_views
 
@@ -512,7 +513,8 @@ class HeadsUpDisplay(object):
                 texture, ((self.__width__ >> 1) - (text_width >> 1), y))
             y += text_height + (text_height >> 3)
 
-        texture = self.__detail_font__.render(f"Version {VERSION}", True, display.GREEN)
+        texture = self.__detail_font__.render(
+            'Version {}'.format(VERSION), True, display.GREEN)
         text_width, text_height = texture.get_size()
         surface.blit(texture, ((
             self.__width__ >> 1) - (text_width >> 1), self.__height__ - text_height))

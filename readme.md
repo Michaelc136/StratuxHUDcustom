@@ -157,13 +157,15 @@ _NOTE:_ This _does not_ include a power source. You will need to supply ship pow
 
 ### First Boot
 
+Please execute the following commands in the terminal window. Text that appears in `this font` should be typed exactly, or indicate the exact menu option to be selected.
+
 1. Flash the latest [Raspbian Lite](https://www.raspberrypi.org/downloads/raspbian/) to an SD card. Raspbian Lite is a smaller download and excludes software not used by this project.
 2. Plug in a keyboard and a monitor
    1. _OPTIONAL:_ Directly plugging an ethernet cable to the Pi from a router (or other device with an internet connection) will make the setup faster. You may also skip adding your home network to the WiFi settings.
 3. Plug in the power to the Pi.
 4. Login to the command line:
-    1. If you are using a GUI version of Raspbian: Press ctrl+alt+f1 to quit from the GUI to the desktop
-    2. If you are using the "Lite" (command line only version), login with the username `pi` and password `raspberry`
+   1. If you are using a GUI version of Raspbian: Press ctrl+alt+f1 to quit from the GUI to the desktop
+   2. If you are using the "Lite" (command line only version), login with the username `pi` and password `raspberry`
 5. `sudo raspi-config`
 6. `Boot Options` -> `Desktop / CLI` -> `Console Autologin`
 7. `Advanced Options` -> `Expand Filesystem`
@@ -171,25 +173,25 @@ _NOTE:_ This _does not_ include a power source. You will need to supply ship pow
 9. "OK"
 10. "Finish"
 11. "Yes"
-12. Wait for the reboot
+12. Wait for the reboot. Login again with UN:`pi`, PW:`raspberry`
 13. `sudo raspi-config`
 14. "Network options" -> "WiFi" _(Skip this if you are using an ethernet based connection.)_
 15. Choose your country. Pressing "u" will take you to USA. _(Skip this if you are using an ethernet based connection.)_
 16. Enter your network name and password. _(Skip this if you are using an ethernet based connection.)_
-17. "Interfacing Options" -> "Enable SSH"
-18. "Localization" -> "Change Keyboard Layout" -> "Generic 104"
-19. "Other" -> "English US" -> "Default" -> "No compose" -> "Yes"
-20. "Finish"
+17. `Interfacing Options` -> `SSH` -> `Enable` -> `OK`
+18. `Localisation Options` -> `Change Keyboard Layout` -> `Generic 104 PC`
+19. `Other` -> `English (US)` -> `English (US)` -> `The default for this keyboard layout` -> `No compose key`
+20. `<Finish>`
+21. `sudo apt-get update && sudo apt-get dist-upgrade -y`
+    1. Please note that this will update the operating system and may take a while. Using a WiFi connection will take longer.
+22. `sudo reboot now`
 
 #### Raspberry Pi 3B+
 
 If you are using a 3B+ (We reccomend using a "standard" Raspberry Pi 3 due to its tolerance of lower voltages.), it may suffer from undervoltage alerts.
+Earlier versions of Raspbian Stretch did have an issue, but an OS update did not solve all issues with undervoltage.
 
 These _may_ be relieved by the following command to update your Linux install to the latest version of Raspbian:
-
-```bash
-sudo apt-get update && sudo apt-get dist-upgrade -y
-```
 
 _Make sure you are using a high quality, low resistance, micro USB cable to supply power to your Pi 3B+._
 
@@ -199,24 +201,26 @@ _NOTE:_ Using an ethernet cable for the internet connect will greatly simplify t
 
 1. Enter `ping google.com`. Press ctrl+c after a while. This will confirm that you have internet access. If you do not, then use rasp-config to re-enter your wi-fi
 2. `cd ~`
-3. Next we will make sure you have the latest version of the operating system, and the correct prerequisites.
-   1. `sudo apt-get update`
-   2. `sudo apt-get dist-upgrade`
-4. Now we will copy the HUD software onto the rendering unit.
+3. `sudo apt-get install libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev`
+   1. Enter `Y` to accept the disk usage
+4. `sudo apt install git`
+   1. Enter `Y` to accept the disk usage
+5. `sudo apt install vim`
+6. Now we will copy the HUD software onto the rendering unit.
    1. `git clone https://github.com/JohnMarzulli/StratuxHud.git`
    2. `cd StratuxHud`
-5. `python3 --version`. Verify that your version is 3.5.1 or newer
-6. `sudo python3 setup.py develop`
-7. `sudo raspi-config`
-8. Choose "WiFi" again, and enter `stratux` as the SSID. No password.
+7. `python3 --version`. Verify that your version is 3.5.1 or newer
+8. `sudo python3 setup.py develop`
+9. `sudo raspi-config`
+10. Choose "WiFi" again, and enter `stratux` as the SSID. No password.
     1. _Note:_ If you have changed your password on your Stratux, then you will need to enter the password for the Stratux's network.
-9. `sudo vim /etc/wpa_supplicant/wpa_supplicant.conf`
-10. Delete the section that contains your WiFi network, leaving the section that contains the Stratux network.
-11. More info on configuring Linux WiFi: <https://www.raspberrypi.org/forums/viewtopic.php?t=160620>
-12. Save and quit.
-13. Type "crontab -e"
-14. Select "Nano" (Option 1)
-15. Enter the following text at the _bottom_ of the file:
+11. `sudo vim /etc/wpa_supplicant/wpa_supplicant.conf`
+12. Delete the section that contains your WiFi network, leaving the section that contains the Stratux network.
+13. More info on configuring Linux WiFi: <https://www.raspberrypi.org/forums/viewtopic.php?t=160620>
+14. Save and quit.
+15. Type "crontab -e"
+16. Select "Nano" (Option 1)
+17. Enter the following text at the _bottom_ of the file:
 
 ```bash
 @reboot sudo python3 /home/pi/StratuxHud/stratux_hud.py &

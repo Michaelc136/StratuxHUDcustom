@@ -45,11 +45,12 @@ class AdsbTrafficListing(AdsbElement):
         icao = report[4]
 
         # if self.__show_list__:
-        traffic_report = f"{identifier.ljust(max_string_lengths[0])} " \
-                       + f"{bearing.rjust(max_string_lengths[1])} " \
-                       + f"{distance_text.rjust(max_string_lengths[2])} " \
-                       + f"{altitude.rjust(max_string_lengths[3])}"
-            
+        traffic_report = "{0} {1} {2} {3}".format(
+            identifier.ljust(max_string_lengths[0]),
+            bearing.rjust(max_string_lengths[1]),
+            distance_text.rjust(max_string_lengths[2]),
+            altitude.rjust(max_string_lengths[3]))
+
         return (icao, traffic_report)
 
     def __get_padded_traffic_reports__(self, traffic_reports):
@@ -67,8 +68,8 @@ class AdsbTrafficListing(AdsbElement):
         delta_sign = ""
         if altitude_delta > 0:
             delta_sign = "+"
-        altitude_text = f"{delta_sign}{altitude_delta}"
-        bearing_text = f"{traffic.bearing:.0f}"
+        altitude_text = "{0}{1}".format(delta_sign, altitude_delta)
+        bearing_text = "{0:.0f}".format(traffic.bearing)
 
         return [identifier, bearing_text, distance_text, altitude_text, traffic.icao_address]
 
