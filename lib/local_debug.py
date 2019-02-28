@@ -20,7 +20,8 @@ def validate_python_version():
         Exception -- If the  version of Python is not new enough.
     """
 
-    python_version = float('{0}{1}'.format(version_info.major, version_info.minor))
+    python_version = float('{0}{1}'.format(
+        version_info.major, version_info.minor))
     error_text = 'Requires Python {}'.format(REQUIRED_PYTHON_VERSION)
 
     if python_version < REQUIRED_PYTHON_VERSION:
@@ -28,7 +29,8 @@ def validate_python_version():
         raise Exception(error_text)
 
     if python_version > MAXIMUM_PYTHON_VERSION:
-        print(f"Python version {python_version} is newer than the maximum allowed version of {MAXIMUM_PYTHON_VERSION}")
+        print('Python version {} is newer than the maximum allowed version of {}'.format(
+            python_version, MAXIMUM_PYTHON_VERSION))
 
 
 def is_debug():
@@ -37,5 +39,6 @@ def is_debug():
     """
 
     return platform in ["win32", "darwin"]
+
 
 validate_python_version()
