@@ -5,8 +5,13 @@ import threading
 import requests
 
 import configuration
-import lib.recurring_task as recurring_task
-from lib.simulated_values import SimulatedValue
+
+try:
+    import lib.recurring_task as recurring_task
+    from lib.simulated_values import SimulatedValue
+except:
+    import recurring_task
+    from simulated_values import SimulatedValue
 
 HEADING_NOT_AVAILABLE = '---'
 

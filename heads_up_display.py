@@ -11,26 +11,24 @@ from time import sleep
 import pygame
 import requests
 
+import hud_elements
 import lib.display as display
 import lib.local_debug as local_debug
 import lib.utilities as utilities
+import restful_host
+import targets
 import traffic
 from aircraft import Aircraft
 # pylint: disable=unused-wildcard-import
 from configuration import *
 from lib.recurring_task import RecurringTask
-from lib.task_timer import TaskTimer, RollingStats
-import hud_elements
-import targets
-import traffic
-import restful_host
-from views import (adsb_on_screen_reticles, adsb_target_bugs, adsb_target_bugs_only,
-                   adsb_traffic_listing, ahrs_not_available, altitude,
-                   artificial_horizon, compass_and_heading_bottom_element,
-                   groundspeed, heading_target_bugs,
-                   level_reference, roll_indicator, skid_and_gs,
-                   system_info,
-                   target_count, time)
+from lib.task_timer import RollingStats, TaskTimer
+from views import (adsb_on_screen_reticles, adsb_target_bugs,
+                   adsb_target_bugs_only, adsb_traffic_listing,
+                   ahrs_not_available, altitude, artificial_horizon,
+                   compass_and_heading_bottom_element, groundspeed,
+                   heading_target_bugs, level_reference, roll_indicator,
+                   skid_and_gs, system_info, target_count, time)
 
 # TODO - Disable functionality based on the enabled StratuxCapabilities
 # TODO - Check for the key existence anyway... cross update the capabilities
@@ -82,6 +80,15 @@ class HeadsUpDisplay(object):
         except:
             pass
 
+    def run_for_profiler(self):
+        start_time = datetime.datetime.utcnow()
+        seconds_to_run = 60
+
+        clock = pygame.time.Clock()
+
+        while (datetime.datetime.utcnow() - start_time).total_seconds() < seconds_to_run:
+            self.tick(clock)
+
     def run(self):
         """
         Runs the update/render logic loop.
@@ -92,11 +99,10 @@ class HeadsUpDisplay(object):
         # Make sure that the disclaimer is visible for long enough.
         sleep(5)
 
-        clock = pygame.time.Clock()
+
 
         try:
-            while self.tick(clock):
-                pass
+            self.run_for_profiler()
         finally:
             pygame.display.quit()
 

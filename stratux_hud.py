@@ -63,4 +63,6 @@ if __name__ == '__main__':
         "System, DateTime, Component, Instantaneous, Rolling Mean, Max")
 
     hud = heads_up_display.HeadsUpDisplay(LOGGER)
-    hud.run()
+
+    import cProfile
+    cProfile.run('hud.run()', sort='tottime')
