@@ -579,11 +579,11 @@ class AdsbTrafficClient(WebSocketClient):
 
         try:
             Traffic.TRAFFIC_REPORTS_RECEIVED += 1
-            adsb_traffic = json.loads(m.data)
+            adsb_traffic = json.loads(m.data.decode("utf-8"))
             AdsbTrafficClient.TRAFFIC_MANAGER.handle_traffic_report(
                 adsb_traffic)
-        except:
-            print("Issue decoding JSON")
+        except Exception as e:
+            print("Issue decoding JSON - EX={}".format(e))
 
     def __dump_traffic_diag__(self):
         """
