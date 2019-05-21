@@ -184,8 +184,18 @@ class HeadsUpDisplay(object):
             # to overdraw the pitch lines
             # and improve readability
             try:
-                render_times = [self.__ahrs_not_available_element__.render(surface, orientation)] if show_unavailable \
-                    else [self.__render_view_element__(hud_element, orientation) for hud_element in view]
+                # Show the RED unavailable X if the AHRS is not present
+                render_times = [self.__ahrs_not_available_element__.render(
+                    surface, orientation)] if show_unavailable else []
+
+                # Render all of the elements that we can.
+                # If the AHRS is not available, then skip any
+                # elements that use the AHRS
+                for hud_element in view:
+                    if show_unavailable and hud_element.uses_ahrs():
+                        pass
+                    else:
+                        render_times += self.__render_view_element__(hud_element, orientation)
             except Exception as e:
                 self.warn("LOOP:" + str(e))
             finally:
