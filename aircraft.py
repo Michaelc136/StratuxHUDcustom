@@ -333,6 +333,7 @@ class AhrsStratux(LoggingObject):
 
         return values[0] if values is not None and len(values) > 0 else default
 
+
     def update(self):
         """
         Grabs the AHRS (if available)
@@ -373,8 +374,8 @@ class AhrsStratux(LoggingObject):
             ahrs_json, 'GPSTrueCourse', 0.0)
         new_ahrs_data.alt = self.__get_value_with_fallback__(
             ahrs_json, ['GPSAltitudeMSL', 'BaroPressureAltitude'], None)
-        new_ahrs_data.position = (
-            ahrs_json['GPSLatitude'], ahrs_json['GPSLongitude'])
+        new_ahrs_data.position = (self.__get_value__(ahrs_json, 'GPSLatitude', None),
+            self.__get_value__(ahrs_json, 'GPSLongitude', None))
         new_ahrs_data.vertical_speed = self.__get_value__(
             ahrs_json, 'GPSVerticalSpeed', 0.0)
         new_ahrs_data.groundspeed = self.__get_value__(
@@ -460,11 +461,8 @@ class AhrsStratux(LoggingObject):
         # If an update to the AHRS takes longer than this,
         # then the AHRS should be considered not available.
         self.__min_update_seconds__ = 0.3
-        # Make the timeout a reasonable short time.
-        # If the target FPS is 30 (default)
-        # then this will cause the timeouts to occur at
-        # a response any slower than 7FPS
-        self.__timeout__ = (1.0 / configuration.TARGET_AHRS_FRAMERATE) * 4
+        # Make the timeout a reasonable time.
+        self.__timeout__ = configuration.AHRS_TIMEOUT
         self.__stratux_session__ = requests.Session()
 
         self.ahrs_data = AhrsData()

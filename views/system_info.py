@@ -68,9 +68,9 @@ def get_cpu_temp():
     color = GREEN
 
     try:
-        if local_debug.IS_PI:
-            raspberry_pi_temp = open('/sys/class/thermal/thermal_zone0/temp')
-            temp = float(raspberry_pi_temp.read())
+        if local_debug.IS_LINUX:
+            linux_cpu_temp = open('/sys/class/thermal/thermal_zone0/temp')
+            temp = float(linux_cpu_temp.read())
             temp = temp/1000
 
             color = get_cpu_temp_text_color(temp)
@@ -161,9 +161,7 @@ class SystemInfo(AhrsElement):
         self.task_timer = TaskTimer('Time')
         self.__font__ = font
         self.font_height = font.get_height()
-        text_half_height = int(self.font_height) >> 1
-        self.__text_y_pos__ = framebuffer_size[1] - \
-            text_half_height - self.font_height
+        self.__text_y_pos__ = framebuffer_size[1] - self.font_height
         self.__rhs__ = int(0.9 * framebuffer_size[0])
 
         self.__left_x__ = int(framebuffer_size[0] * 0.01)
@@ -173,7 +171,7 @@ class SystemInfo(AhrsElement):
         self.__ip_address__ = get_ip_address()
         self.__cpu_temp__ = None
         self.__framebuffer_size__ = framebuffer_size
-        self.__line_spacing__ = 1.05
+        self.__line_spacing__ = 1.01
 
     def render(self, framebuffer, orientation):
         self.task_timer.start()

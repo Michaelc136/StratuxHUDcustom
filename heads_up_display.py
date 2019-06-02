@@ -237,9 +237,9 @@ class HeadsUpDisplay(object):
                     surface, CONFIGURATION.flip_horizontal, CONFIGURATION.flip_vertical)
                 surface.blit(flipped, [0, 0])
             pygame.display.update()
-            clock.tick(MAX_FRAMERATE)
             self.__fps__.push(current_fps)
             self.frame_cleanup.stop()
+            clock.tick(MAX_FRAMERATE)
 
         return True
 
@@ -377,6 +377,8 @@ class HeadsUpDisplay(object):
         """
 
         hud_views = []
+        existing_elements = {}
+        elements_requested = 0
 
         with open(VIEWS_FILE) as json_config_file:
             json_config_text = json_config_file.read()
@@ -389,9 +391,21 @@ class HeadsUpDisplay(object):
                     new_view_elements = []
 
                     for element_name in element_names:
+                        elements_requested += 1
                         element_config = view_elements[element_name]
-                        new_view_elements.append(self.__build_ahrs_hud_element(
-                            element_config[0], element_config[1]))
+                        element_hash_name = "{}{}".format(
+                            element_config[0], element_config[1])
+
+                        # Instantiating multiple elements of the same type/font
+                        # REALLY chews up memory.. and there is no
+                        # good reason to use new instances anyway.
+                        if element_hash_name not in existing_elements:
+                            new_element = self.__build_ahrs_hud_element(element_config[0], element_config[1])
+                            existing_elements[element_hash_name] = new_element
+                                                                                                                           
+
+                        new_view_elements.append(
+                            existing_elements[element_hash_name])
 
                     is_ahrs_view = self.__is_ahrs_view__(new_view_elements)
                     hud_views.append(
@@ -399,6 +413,8 @@ class HeadsUpDisplay(object):
                 except Exception as ex:
                     self.log(
                         "While attempting to load view={}, EX:{}".format(view, ex))
+
+        self.log("While loading, {} elements were requested, with {} unique being created.".format(elements_requested, len(existing_elements.keys())))
 
         return hud_views
 
@@ -482,8 +498,6 @@ class HeadsUpDisplay(object):
         pygame.font.init()
         self.__should_render_perf__ = False
 
-        font_name = "consolas,monaco,courier,arial,helvetica"
-
         font_size_std = int(self.__height__ / 10.0)
         font_size_detail = int(self.__height__ / 12.0)
         font_size_loading = int(self.__height__ / 4.0)
@@ -492,8 +506,8 @@ class HeadsUpDisplay(object):
             get_absolute_file_path("./assets/fonts/LiberationMono-Bold.ttf"), font_size_std)
         self.__detail_font__ = pygame.font.Font(
             get_absolute_file_path("./assets/fonts/LiberationMono-Bold.ttf"), font_size_detail)
-        self.__loading_font__ = pygame.font.SysFont(
-            font_name, font_size_loading, True, False)
+        self.__loading_font__ = pygame.font.Font(
+            get_absolute_file_path("./assets/fonts/LiberationMono-Regular.ttf"), font_size_loading)
         self.__show_boot_screen__()
 
         self.__aircraft__ = Aircraft(self.__logger__)
@@ -531,9 +545,9 @@ class HeadsUpDisplay(object):
         disclaimer_text = ['Not intended as',
                            'a primary collision evasion',
                            'or flight instrument system.',
-                           'For advisiory only.']
+                           'For advisory only.']
 
-        texture = self.__loading_font__.render("BOOTING", True, display.RED)
+        texture = self.__loading_font__.render("LOADING", True, display.RED)
         text_width, text_height = texture.get_size()
 
         surface = pygame.display.get_surface()
