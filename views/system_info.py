@@ -11,7 +11,7 @@ import pygame
 import socket
 import datetime
 import math
-from aithre import AithreClient
+from aithre import AithreClient, OFFLINE
 
 import struct
 
@@ -293,17 +293,19 @@ class Aithre(AhrsElement):
 
         if AithreClient.INSTANCE is not None and configuration.CONFIGURATION.aithre_enabled:
             co_level = AithreClient.INSTANCE.get_co_report()
+            co_units = "PPM"
 
-            if co_level.co is None or isinstance(co_level, basestring):
+            if co_level.co is None or isinstance(co_level.co, basestring):
                 if self.__has_been_connected__:
                     co_color = RED
-                    co_ppm_text = "OFFLINE"
+                    co_ppm_text = OFFLINE
+                    co_units = ""
                 else:
                     self.task_timer.stop()
                     return
             else:
                 co_color = get_aithre_co_color(co_level.co)
-                co_ppm_text = "{}PPM".format(co_level.co)
+                co_ppm_text = "{}{}".format(co_level.co, co_units)
                 self.__has_been_connected__ = True
 
             co_ppm_texture = self.__font__.render(
@@ -351,7 +353,7 @@ class Illyrian(AhrsElement):
             if spo2_level is None or isinstance(spo2_level, basestring):
                 if self.__has_been_connected__:
                     spo2_color = RED
-                    spo2_text = "OFFLINE"
+                    spo2_text = OFFLINE
                 else:
                     self.task_timer.stop()
                     return

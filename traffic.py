@@ -443,9 +443,15 @@ class AdsbTrafficClient:
     def __init__(self, rest_address):
         self.__traffic_session__ = requests.Session()
         self.rest_address = rest_address
-        self.__update_traffic_task__ = recurring_task.RecurringTask(
+        self.__update_traffic_task__ = recurring_task.IntermittentTask(
             'UpdateTraffic', 0.1, self.update_reliable_traffic)
         AdsbTrafficClient.INSTANCE = self
+    
+    def update(self):
+        """
+        Triggers an update of the traffic manager.
+        """
+        self.__update_traffic_task__.run()
 
     def reset_traffic_manager(self):
         """

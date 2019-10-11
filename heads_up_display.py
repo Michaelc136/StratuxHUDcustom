@@ -169,7 +169,10 @@ class HeadsUpDisplay(object):
             current_fps = int(clock.get_fps())
             surface = pygame.display.get_surface()
             surface.fill(display.BLACK)
+            AdsbTrafficClient.INSTANCE.update()
+            self.__update_traffic_task__.run()
             self.__purge_textures_task__.run()
+            self.__update_aithre_task__.run()
 
             self.frame_setup.stop()
             self.render_perf.start()
@@ -502,6 +505,16 @@ class HeadsUpDisplay(object):
             10.0,
             self.__purge_old_textures__,
             logger)
+        self.__update_aithre_task__ = IntermittentTask(
+            "update_aithre",
+            5.0,
+            self.__update_aithre__,
+            logger)
+        self.__update_traffic_task__ = IntermittentTask(
+            "update_traffic",
+            0.1,
+            self.__update_traffic_reports__,
+            logger)
 
         RecurringTask(
             "rest_host",
@@ -509,18 +522,6 @@ class HeadsUpDisplay(object):
             self.web_server.run,
             logger,
             start_immediate=False)
-        RecurringTask(
-            "update_traffic",
-            0.1,
-            self.__update_traffic_reports__,
-            logger,
-            start_immediate=True)
-        RecurringTask(
-            "update_aithre",
-            5.0,
-            self.__update_aithre__,
-            logger,
-            start_immediate=True)
 
     def __show_boot_screen__(self):
         """

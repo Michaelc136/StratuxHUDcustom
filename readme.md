@@ -221,6 +221,15 @@ Make sure you are using a high quality power cable if you are using a Pi 3B+
 @reboot sudo python /home/pi/StratuxHud/stratux_hud.py &
 ```
 
+Kiosk mode can be enabled using these directions:
+https://jonathanmh.com/raspberry-pi-4-kiosk-wall-display-dashboard/
+
+OTHER: https://blockdev.io/raspberry-pi-2-and-3-chromium-in-kiosk-mode/ NOT https://die-antwort.eu/techblog/2017-12-setup-raspberry-pi-for-kiosk-mode/ NOT-> 
+
+AP Mode can be enabled using these steps:
+https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md
+https://www.thegeekpub.com/240065/setup-a-raspberry-pi-wireless-access-point/
+
 1. Save and quit.
 
 ### Ownship
