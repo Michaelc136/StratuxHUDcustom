@@ -23,6 +23,22 @@ RED = (255,   0,   0)
 YELLOW = (255, 255, 0)
 
 
+def get_display_size():
+    import subprocess
+
+    cmd = ['xrandr']
+    cmd2 = ['grep', '*']
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    p2 = subprocess.Popen(cmd2, stdin=p.stdout, stdout=subprocess.PIPE)
+    p.stdout.close()
+
+    resolution_string, junk = p2.communicate()
+    resolution = resolution_string.split()[0]
+    width, height = resolution.split('x')
+
+    return int(width), int(height)
+
+
 def display_init():
     """
     Initializes PyGame to run on the current screen.
@@ -33,6 +49,8 @@ def display_init():
     if disp_no:
         screen_mode = (pygame.FULLSCREEN if local_debug.IS_PI else pygame.RESIZABLE) \
             | pygame.HWACCEL
+        if (screen_mode & pygame.FULLSCREEN) != 0:
+            size = get_display_size()
         print("Running under X{}, flags={}".format(disp_no, screen_mode))
         screen = pygame.display.set_mode(size, screen_mode)
     else:
