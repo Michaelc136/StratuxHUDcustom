@@ -1,3 +1,10 @@
+import configuration
+import lib.colors as colors
+from lib.task_timer import TaskTimer
+from lib.display import *
+import hud_elements
+from configuration import Configuration
+import units
 import math
 
 import pygame
@@ -5,14 +12,6 @@ import utils
 import testing
 
 testing.load_imports()
-
-import units
-from configuration import Configuration
-import hud_elements
-from lib.display import *
-from lib.task_timer import TaskTimer
-import lib.colors as colors
-import configuration
 
 
 class AdsbElement(object):
@@ -84,14 +83,24 @@ class AdsbElement(object):
         # Assumes traffic.position_valid
         # TODO - Account for aircraft roll...
 
-        altitude_delta = int(traffic.altitude - orientation.alt)
-        slope = altitude_delta / traffic.distance
+        alt = orientation.alt
+        compass = orientation.get_onscreen_projection_heading()
+
+        if isinstance(alt, basestring):
+            alt = 0
+            compass = 0
+
+        altitude_delta = int(traffic.altitude - alt)
+        slope = 1.0
+        if traffic.distance > 0.0:
+            slope = altitude_delta / traffic.distance
+
         vertical_degrees_to_target = math.degrees(math.atan(slope))
         vertical_degrees_to_target -= orientation.pitch
 
         # TODO - Double check ALL of this math...
-        compass = orientation.get_onscreen_projection_heading()
-        horizontal_degrees_to_target = utils.apply_declination(traffic.bearing) - compass
+        horizontal_degrees_to_target = utils.apply_declination(
+            traffic.bearing) - compass
 
         screen_y = -vertical_degrees_to_target * self.__pixels_per_degree_y__
         screen_x = horizontal_degrees_to_target * self.__pixels_per_degree_y__
