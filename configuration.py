@@ -74,14 +74,14 @@ class DataSourceNames(object):
 class Configuration(object):
     ###############################
     # Hardcoded Config Fall Backs #
-    ###############################
+    ###############################p
     #
     # These are here in case the user does something
     # bad to the default config files.
     #
     DEFAULT_NETWORK_IP = "192.168.10.1"
-    DEFAULT_TRAFFIC_MANAGER_ADDRESS = "localhost:8000"
-    DEFAULT_AITHRE_MANAGER_ADDRESS = "localhost:8081"
+    DEFAULT_TRAFFIC_MANAGER_ADDRESS = "{}:8000".format(DEFAULT_NETWORK_IP)
+    DEFAULT_AITHRE_MANAGER_ADDRESS = "{}:8081".format(DEFAULT_NETWORK_IP)
     STRATUX_ADDRESS_KEY = "stratux_address"
     DATA_SOURCE_KEY = "data_source"
     FLIP_HORIZONTAL_KEY = "flip_horizontal"
