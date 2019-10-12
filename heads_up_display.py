@@ -154,6 +154,9 @@ class HeadsUpDisplay(object):
         current_fps = 0  # initialize up front avoids exception
 
         try:
+            self.__update_traffic_task__.run()
+            self.__purge_textures_task__.run()
+
             self.frame_setup.start()
             if not self.__handle_input__():
                 return False
@@ -169,10 +172,6 @@ class HeadsUpDisplay(object):
             current_fps = int(clock.get_fps())
             surface = pygame.display.get_surface()
             surface.fill(display.BLACK)
-            AdsbTrafficClient.INSTANCE.update()
-            self.__update_traffic_task__.run()
-            self.__purge_textures_task__.run()
-            self.__update_aithre_task__.run()
 
             self.frame_setup.stop()
             self.render_perf.start()
@@ -426,6 +425,7 @@ class HeadsUpDisplay(object):
         self.cache_perf.stop()
 
     def __update_traffic_reports__(self):
+        AdsbTrafficClient.INSTANCE.update()
         hud_elements.HudDataCache.update_traffic_reports()
 
     def __update_aithre__(self):
@@ -456,9 +456,6 @@ class HeadsUpDisplay(object):
         self.render_perf = TaskTimer('Render')
         self.frame_setup = TaskTimer('Setup')
         self.frame_cleanup = TaskTimer('Cleanup')
-
-        self.__frame_timers__ = {'Setup': self.frame_setup,
-                                 'Render': self.render_perf, 'Cleanup': self.frame_cleanup}
 
         self.cache_perf = TaskTimer('Cache')
 
@@ -505,11 +502,6 @@ class HeadsUpDisplay(object):
             10.0,
             self.__purge_old_textures__,
             logger)
-        self.__update_aithre_task__ = IntermittentTask(
-            "update_aithre",
-            5.0,
-            self.__update_aithre__,
-            logger)
         self.__update_traffic_task__ = IntermittentTask(
             "update_traffic",
             0.1,
@@ -522,6 +514,19 @@ class HeadsUpDisplay(object):
             self.web_server.run,
             logger,
             start_immediate=False)
+        
+        RecurringTask(
+            "update_aithre",
+            5.0,
+            self.__update_aithre__,
+            logger)
+
+        self.__frame_timers__ = {
+            'UpdateTraffic': self.__update_traffic_task__.task_timer,
+            'PurgeTextures': self.__purge_textures_task__.task_timer,
+            'Setup': self.frame_setup,
+            'Render': self.render_perf,
+            'Cleanup': self.frame_cleanup}
 
     def __show_boot_screen__(self):
         """

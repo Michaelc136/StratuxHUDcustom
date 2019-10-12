@@ -7,6 +7,8 @@ import sys
 import threading
 import time
 
+from task_timer import TaskTimer
+
 FUNCTION_A_COUNT = 0
 FUNCTION_B_COUNT = 0
 
@@ -23,6 +25,7 @@ class IntermittentTask(object):
             (now - self.__last_run__).total_seconds() > self.__task_interval__)
 
         if run_task:
+            self.task_timer.start()
             try:
                 self.__task_callback__()
                 self.__last_run__ = datetime.datetime.utcnow()
@@ -34,6 +37,8 @@ class IntermittentTask(object):
                     self.__logger__.info(error_mesage)
                 else:
                     print(error_mesage)
+            finally:
+                self.task_timer.stop()
 
     def __init__(self, task_name, task_interval, task_callback, logger=None):
         """
@@ -46,6 +51,7 @@ class IntermittentTask(object):
         self.__task_callback__ = task_callback
         self.__logger__ = logger
         self.__last_run__ = None
+        self.task_timer = TaskTimer(task_name)
 
 
 class RecurringTask(object):
