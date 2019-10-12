@@ -175,8 +175,13 @@ class AdsbElement(object):
             [type] -- [description]
         """
 
+        current_alt = orientation.alt
+
+        if isinstance(current_alt, basestring):
+            current_alt = 0.0
+
         altitude_delta = int(
-            (traffic_report.altitude - orientation.alt) / 100.0)
+            (traffic_report.altitude - current_alt) / 100.0)
         distance_text = self.__get_distance_string__(traffic_report.distance)
         delta_sign = ''
         if altitude_delta > 0:

@@ -34,8 +34,13 @@ class AdsbTargetBugs(AdsbElement):
             framebuffer {Framebuffer} -- What we are going to draw to.
         """
 
+        if isinstance(heading, basestring):
+            bearing = traffic_report.bearing
+        else:
+            bearing = utils.apply_declination(traffic_report.bearing)
+
         heading_bug_x = get_heading_bug_x(
-            heading, utils.apply_declination(traffic_report.bearing), self.__pixels_per_degree_x__)
+            heading, bearing, self.__pixels_per_degree_x__)
 
         additional_info_text = self.__get_additional_target_text__(
             traffic_report, orientation)

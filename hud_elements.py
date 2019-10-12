@@ -76,7 +76,8 @@ class HudDataCache(object):
 
     __LOCK__ = threading.Lock()
 
-    __TRAFFIC_CLIENT__ = AdsbTrafficClient(configuration.CONFIGURATION.get_traffic_manager_address())
+    __TRAFFIC_CLIENT__ = AdsbTrafficClient(
+        configuration.CONFIGURATION.get_traffic_manager_address())
 
     @staticmethod
     def update_traffic_reports():
@@ -133,7 +134,8 @@ class HudDataCache(object):
         """
 
         lsu = HudDataCache.__CACHE_ENTRY_LAST_USED__[texture_key]
-        time_since_last_use = (datetime.datetime.utcnow() - lsu).total_seconds()
+        time_since_last_use = (
+            datetime.datetime.utcnow() - lsu).total_seconds()
 
         return texture_key if time_since_last_use > HudDataCache.__CACHE_INVALIDATION_TIME__ else None
 
@@ -190,12 +192,14 @@ class HudDataCache(object):
 
                 HudDataCache.TEXT_TEXTURE_CACHE[text] = texture, size
 
-            HudDataCache.__CACHE_ENTRY_LAST_USED__[text] = datetime.datetime.utcnow()
+            HudDataCache.__CACHE_ENTRY_LAST_USED__[
+                text] = datetime.datetime.utcnow()
             result = HudDataCache.TEXT_TEXTURE_CACHE[text]
         finally:
             HudDataCache.__LOCK__.release()
-        
+
         return result
+
 
 def get_heading_bug_x(heading, bearing, degrees_per_pixel):
     """
@@ -210,7 +214,11 @@ def get_heading_bug_x(heading, bearing, degrees_per_pixel):
         int -- The screen X position.
     """
 
-    delta = (bearing - heading + 180)
+    if isinstance(heading, basestring):
+        delta = bearing
+    else:
+        delta = (bearing - heading + 180)
+
     if delta < 0:
         delta += 360
 
