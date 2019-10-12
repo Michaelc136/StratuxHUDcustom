@@ -49,8 +49,11 @@ def display_init():
     if disp_no:
         screen_mode = (pygame.FULLSCREEN if local_debug.IS_PI else pygame.RESIZABLE) \
             | pygame.HWACCEL
+
         if (screen_mode & pygame.FULLSCREEN) != 0:
             size = get_display_size()
+            screen_mode = screen_mode | pygame.OPENGL
+
         print("Running under X{}, flags={}".format(disp_no, screen_mode))
         screen = pygame.display.set_mode(size, screen_mode)
     else:
